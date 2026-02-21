@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@import "./file-manager.css";
+
+@source "../views/**/*";
+@source "../../src/**/*";

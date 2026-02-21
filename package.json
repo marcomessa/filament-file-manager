@@ -1,0 +1,11 @@
+{
+    "name": "filament-file-manager",
+    "private": true,
+    "scripts": {
+        "build": "npx @tailwindcss/cli -i resources/css/tailwind.css -o resources/dist/file-manager.css --minify",
+        "dev": "npx @tailwindcss/cli -i resources/css/tailwind.css -o resources/dist/file-manager.css --watch"
+    },
+    "devDependencies": {
+        "@tailwindcss/cli": "^4.0"
+    }
+}

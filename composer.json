@@ -1,0 +1,44 @@
+{
+    "name": "mmes-design/filament-file-manager",
+    "description": "A beautiful file manager plugin for Filament. Browse, upload, rename, move and delete files with ease.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "filament",
+        "file-manager",
+        "laravel",
+        "livewire"
+    ],
+    "homepage": "https://github.com/mmes-design/filament-file-manager",
+    "authors": [
+        {
+            "name": "Marco Messa",
+            "email": "marco@mmes.design"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "MmesDesign\\FilamentFileManager\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MmesDesign\\FilamentFileManager\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MmesDesign\\FilamentFileManager\\FileManagerServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "filament/filament": "^5.0",
+        "intervention/image": "^3.0",
+        "spatie/laravel-package-tools": "^1.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
