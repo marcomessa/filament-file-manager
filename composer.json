@@ -9,7 +9,7 @@
         "laravel",
         "livewire"
     ],
-    "homepage": "https://github.com/mmes-design/filament-file-manager",
+    "homepage": "https://github.com/marcomessa/filament-file-manager",
     "authors": [
         {
             "name": "Marco Messa",

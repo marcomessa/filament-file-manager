@@ -2,7 +2,7 @@
 
 A file manager plugin for [Filament](https://filamentphp.com). Browse, upload, rename, move, and delete files directly from your admin panel.
 
-![Filament File Manager](https://raw.githubusercontent.com/mmes-design/filament-file-manager/main/art/screenshot.png)
+![Filament File Manager](https://raw.githubusercontent.com/marcomessa/filament-file-manager/main/art/screenshot.png)
 
 ## Features
 
