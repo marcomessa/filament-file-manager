@@ -69,6 +69,10 @@ FileManagerPlugin::make()
     ->navigationSort(5)
 ```
 
+### Disk
+
+This package supports local disks only (`local`, `public`). Remote disks (S3, FTP, etc.) are available in the Pro version.
+
 ### Config file
 
 The published config file (`config/filament-file-manager.php`) lets you customize:

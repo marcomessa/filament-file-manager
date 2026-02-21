@@ -330,12 +330,18 @@ class FileManagerService
 
     protected function disk(string $disk): Filesystem
     {
+        $this->ensureLocalDisk($disk);
+
         return Storage::disk($disk);
     }
 
-    protected function isRemoteDisk(string $disk): bool
+    protected function ensureLocalDisk(string $disk): void
     {
-        return false;
+        $driver = config("filesystems.disks.{$disk}.driver");
+
+        if ($driver !== 'local') {
+            throw new \RuntimeException("The [{$disk}] disk uses the [{$driver}] driver. Remote disks are available in the Pro version of Filament File Manager.");
+        }
     }
 
     protected function hasPublicVisibility(string $disk): bool

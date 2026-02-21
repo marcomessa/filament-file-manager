@@ -308,4 +308,20 @@ class FileManagerServiceTest extends TestCase
         Storage::disk('public')->assertExists('file1.txt');
         Storage::disk('public')->assertExists('file2.txt');
     }
+
+    public function test_remote_disk_is_blocked(): void
+    {
+        config()->set('filesystems.disks.s3test', [
+            'driver' => 's3',
+            'key' => 'test',
+            'secret' => 'test',
+            'region' => 'us-east-1',
+            'bucket' => 'test',
+        ]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Remote disks are available in the Pro version');
+
+        $this->service->listDirectory('s3test');
+    }
 }
