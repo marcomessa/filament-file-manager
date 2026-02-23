@@ -311,6 +311,10 @@ class FileManagerServiceTest extends TestCase
 
     public function test_remote_disk_is_blocked(): void
     {
+        if ($this->service instanceof \MmesDesign\FilamentFileManagerPro\Services\FileManagerService) {
+            $this->markTestSkipped('Pro version allows remote disks.');
+        }
+
         config()->set('filesystems.disks.s3test', [
             'driver' => 's3',
             'key' => 'test',
