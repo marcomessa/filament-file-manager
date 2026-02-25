@@ -13,9 +13,9 @@
     <div
         x-data
         x-on:file-picker-selected.window="
-            if ($event.detail[0]?.fieldId === '{{ $id }}') {
-                $wire.set('{{ $statePath }}', $event.detail[0]?.paths);
-                $wire.unmountFormComponentAction();
+            if ($event.detail.fieldId === '{{ $id }}') {
+                $wire.set('{{ $statePath }}', $event.detail.paths);
+                $wire.unmountAction();
             }
         "
     >

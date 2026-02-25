@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.0.3 - 2026-02-25
+
+- Fix FilePicker confirm selection not setting value on the form field
+- Fix `unmountFormComponentAction` not found error by using `unmountAction`
+
 ## v1.0.2 - 2026-02-25
 
 - Fix Alpine expression error "previewFile is not defined" in FilePicker modal
