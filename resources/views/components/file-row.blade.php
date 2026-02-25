@@ -85,10 +85,12 @@
             'group flex items-center gap-4 px-4 py-2.5 transition duration-150',
             'bg-primary-50/50 dark:bg-primary-500/10' => $isSelected,
         ])
-        @if (! $isSelected)
+        @if (! $isSelected && ! $pickMode)
             :class="previewFile?.path === '{{ $item->path }}'
                 ? 'bg-gray-100/60 dark:bg-white/[0.04]'
                 : 'hover:bg-gray-50 dark:hover:bg-white/5'"
+        @elseif (! $isSelected)
+            class="hover:bg-gray-50 dark:hover:bg-white/5"
         @endif
         @if (! $pickMode)
             data-context-target

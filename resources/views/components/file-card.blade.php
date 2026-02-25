@@ -102,10 +102,12 @@
             'group relative flex flex-col items-center gap-2 rounded-xl p-3 transition duration-200',
             'ring-1 ring-primary-500 bg-primary-50/50 dark:bg-primary-500/10 dark:ring-primary-400' => $isSelected,
         ])
-        @if (! $isSelected)
+        @if (! $isSelected && ! $pickMode)
             :class="previewFile?.path === '{{ $item->path }}'
                 ? 'ring-2 ring-gray-400 dark:ring-gray-500'
                 : 'ring-1 ring-gray-950/5 hover:shadow-md hover:scale-[1.02] dark:ring-white/10 dark:hover:ring-white/20'"
+        @elseif (! $isSelected)
+            class="ring-1 ring-gray-950/5 hover:shadow-md hover:scale-[1.02] dark:ring-white/10 dark:hover:ring-white/20"
         @endif
         @if (! $pickMode)
             data-context-target
