@@ -30,6 +30,13 @@ return [
         'confirm_selection' => 'Confirm selection',
         'browse' => 'Browse',
         'select_file' => 'Select file',
+        'check_updates' => 'Check for updates',
+        'update_available_title' => 'Update available',
+        'update_available_body' => 'Version :latest is available (current: :current).',
+        'up_to_date_title' => 'Up to date',
+        'up_to_date_body' => 'You are running the latest version (:current).',
+        'update_check_failed_title' => 'Check failed',
+        'update_check_failed_body' => 'Unable to check for updates. Please try again later.',
     ],
 
     'messages' => [
