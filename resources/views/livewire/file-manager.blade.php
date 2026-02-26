@@ -43,6 +43,11 @@
     @keydown.window="handleKeydown($event)"
     class="flex gap-4"
 >
+    {{-- Folder tree sidebar (left) --}}
+    <div class="hidden shrink-0 self-stretch lg:block">
+        @include('filament-file-manager::components.folder-tree-sidebar')
+    </div>
+
     {{-- Main content --}}
     <div class="flex min-w-0 flex-1 flex-col gap-4">
         {{-- Toolbar --}}
@@ -138,7 +143,7 @@
     </div>
 
     {{-- Preview sidebar --}}
-    <div class="hidden overflow-hidden rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10 lg:flex">
+    <div class="hidden shrink-0 self-stretch overflow-hidden rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10 lg:flex">
         @include('filament-file-manager::components.file-preview-sidebar')
     </div>
 

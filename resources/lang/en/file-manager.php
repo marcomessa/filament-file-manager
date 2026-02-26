@@ -70,6 +70,15 @@ return [
         'close' => 'Close',
     ],
 
+    'sidebar' => [
+        'folders' => 'Folders',
+        'show_folders' => 'Show folders',
+        'hide_folders' => 'Hide folders',
+        'expand' => 'Expand',
+        'collapse' => 'Collapse',
+        'empty' => '(empty)',
+    ],
+
     'misc' => [
         'empty_folder' => 'This folder is empty',
         'empty_folder_hint' => 'Upload files or create a new folder to get started',

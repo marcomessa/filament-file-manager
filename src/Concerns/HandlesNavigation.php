@@ -10,6 +10,10 @@ trait HandlesNavigation
     {
         $this->currentPath = $path;
         $this->loadDirectory();
+
+        if (method_exists($this, 'ensureAncestorsExpanded')) {
+            $this->ensureAncestorsExpanded($path);
+        }
     }
 
     public function navigateUp(): void
@@ -51,7 +55,7 @@ trait HandlesNavigation
         return $breadcrumbs;
     }
 
-    protected function getDiskLabel(): string
+    public function getDiskLabel(): string
     {
         $disks = config('filament-file-manager.disks', []);
 

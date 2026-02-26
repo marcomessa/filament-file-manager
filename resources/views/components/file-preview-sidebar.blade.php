@@ -1,4 +1,4 @@
-<div class="flex w-80 shrink-0" x-data="{ showInfo: true }">
+<div class="flex w-64 shrink-0" x-data="{ showInfo: true }">
     {{-- Empty state --}}
     <div
         x-show="!previewFile"
