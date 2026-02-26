@@ -72,8 +72,6 @@ return [
 
     'sidebar' => [
         'folders' => 'Cartelle',
-        'show_folders' => 'Mostra cartelle',
-        'hide_folders' => 'Nascondi cartelle',
         'expand' => 'Espandi',
         'collapse' => 'Comprimi',
         'empty' => '(vuota)',

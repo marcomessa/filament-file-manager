@@ -72,8 +72,6 @@ return [
 
     'sidebar' => [
         'folders' => 'Folders',
-        'show_folders' => 'Show folders',
-        'hide_folders' => 'Hide folders',
         'expand' => 'Expand',
         'collapse' => 'Collapse',
         'empty' => '(empty)',

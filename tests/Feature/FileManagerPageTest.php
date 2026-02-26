@@ -315,7 +315,7 @@ class FileManagerPageTest extends TestCase
             ->assertSee('2 selezionati');
     }
 
-    public function test_toggle_folder_tree_opens_and_loads_root(): void
+    public function test_tree_sidebar_loads_root_folders(): void
     {
         Storage::disk('public')->makeDirectory('documents');
         Storage::disk('public')->makeDirectory('images');
@@ -323,12 +323,9 @@ class FileManagerPageTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->assertSet('folderTreeOpen', false)
-            ->call('toggleFolderTree')
-            ->assertSet('folderTreeOpen', true);
+        $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class);
 
-        $nodes = $component->get('folderTreeNodes');
+        $nodes = $component->instance()->buildTreeNodes();
         $this->assertArrayHasKey('', $nodes);
 
         $rootNames = array_column($nodes[''], 'name');
@@ -345,12 +342,11 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->call('toggleFolderTree')
             ->call('toggleTreeFolder', 'images');
 
         $this->assertContains('images', $component->get('expandedFolders'));
 
-        $nodes = $component->get('folderTreeNodes');
+        $nodes = $component->instance()->buildTreeNodes();
         $this->assertArrayHasKey('images', $nodes);
 
         $childNames = array_column($nodes['images'], 'name');
@@ -366,7 +362,6 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->call('toggleFolderTree')
             ->call('toggleTreeFolder', 'images')
             ->assertSet('expandedFolders', ['images'])
             ->call('toggleTreeFolder', 'images');
@@ -382,7 +377,6 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->call('toggleFolderTree')
             ->call('navigateViaTree', 'images/vacation/beach');
 
         $this->assertSame('images/vacation/beach', $component->get('currentPath'));
@@ -406,19 +400,24 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->call('toggleFolderTree')
             ->call('toggleTreeFolder', 'images');
 
         $this->assertContains('images', $component->get('expandedFolders'));
-        $this->assertArrayHasKey('images', $component->get('folderTreeNodes'));
+
+        $nodes = $component->instance()->buildTreeNodes();
+        $this->assertArrayHasKey('images', $nodes);
 
         // Simulate switchDisk by calling resetFolderTree directly (switchDisk is only in Pro)
         $component->instance()->currentDisk = 'local';
         $component->instance()->resetFolderTree();
 
         $this->assertEmpty($component->get('expandedFolders'));
-        // Root should be reloaded since tree is open
-        $this->assertArrayHasKey('', $component->get('folderTreeNodes'));
+
+        $nodes = $component->instance()->buildTreeNodes();
+        $this->assertArrayHasKey('', $nodes);
+
+        $rootNames = array_column($nodes[''], 'name');
+        $this->assertContains('backups', $rootNames);
     }
 
     public function test_navigate_via_breadcrumbs_syncs_tree(): void
@@ -429,10 +428,9 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->call('toggleFolderTree')
             ->call('navigateTo', 'images/vacation');
 
-        // Tree should auto-expand ancestors when navigating with tree open
+        // Tree should auto-expand ancestors when navigating
         $this->assertContains('images', $component->get('expandedFolders'));
         $this->assertContains('images/vacation', $component->get('expandedFolders'));
     }
