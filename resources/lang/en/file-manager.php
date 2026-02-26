@@ -75,6 +75,9 @@ return [
         'expand' => 'Expand',
         'collapse' => 'Collapse',
         'empty' => '(empty)',
+        'show_folders' => 'Show folders',
+        'show_preview' => 'Show preview',
+        'hide_preview' => 'Hide preview',
     ],
 
     'misc' => [

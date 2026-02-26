@@ -35,4 +35,14 @@
         color: white;
     }
 
+    .fi-page.fi-height-full .fi-page-main {
+        flex: 1 1 0%;
+        min-height: 0;
+        height: auto;
+    }
+
+    .fi-page.fi-height-full .fi-page-content {
+        min-height: 0;
+    }
+
 }

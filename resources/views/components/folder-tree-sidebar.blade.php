@@ -3,10 +3,17 @@
     aria-label="{{ __('filament-file-manager::file-manager.sidebar.folders') }}"
 >
     {{-- Header --}}
-    <div class="border-b border-gray-200 px-3 py-2.5 dark:border-white/10">
+    <div class="flex items-center justify-between border-b border-gray-200 px-3 py-2.5 dark:border-white/10">
         <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
             {{ __('filament-file-manager::file-manager.sidebar.folders') }}
         </h3>
+        <button
+            @click="folderSidebarOpen = false; localStorage.setItem('fm-folder-sidebar', 'false')"
+            class="flex size-6 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
+            title="{{ __('filament-file-manager::file-manager.sidebar.collapse') }}"
+        >
+            <x-filament::icon icon="heroicon-m-chevron-left" class="size-4" />
+        </button>
     </div>
 
     {{-- Tree --}}

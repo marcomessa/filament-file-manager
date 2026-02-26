@@ -75,6 +75,9 @@ return [
         'expand' => 'Espandi',
         'collapse' => 'Comprimi',
         'empty' => '(vuota)',
+        'show_folders' => 'Mostra cartelle',
+        'show_preview' => 'Mostra anteprima',
+        'hide_preview' => 'Nascondi anteprima',
     ],
 
     'misc' => [

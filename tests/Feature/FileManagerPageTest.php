@@ -435,6 +435,26 @@ class FileManagerPageTest extends TestCase
         $this->assertContains('images/vacation', $component->get('expandedFolders'));
     }
 
+    public function test_folder_sidebar_renders_collapsed_icon(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
+            ->assertSeeHtml('heroicon-o-folder')
+            ->assertSeeHtml('fm-folder-sidebar');
+    }
+
+    public function test_preview_sidebar_renders_collapsed_icon(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
+            ->assertSeeHtml('heroicon-o-information-circle')
+            ->assertSeeHtml('fm-preview-sidebar');
+    }
+
     /**
      * Create a real test image and return its binary content.
      */

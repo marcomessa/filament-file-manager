@@ -1,18 +1,29 @@
-<div class="flex w-64 shrink-0" x-data="{ showInfo: true }">
+<div class="flex h-full w-64 shrink-0 bg-white dark:bg-gray-900" x-data="{ showInfo: true }">
     {{-- Empty state --}}
     <div
         x-show="!previewFile"
-        class="flex w-full flex-col items-center justify-center gap-3 bg-white p-8 text-center dark:bg-gray-900"
+        class="flex h-full w-full flex-col bg-white dark:bg-gray-900"
     >
-        <x-filament::icon icon="heroicon-o-document-magnifying-glass" class="size-10 text-gray-300 dark:text-gray-600" />
-        <p class="text-sm text-gray-400 dark:text-gray-500">{{ __('filament-file-manager::file-manager.misc.select_file_preview') }}</p>
+        <div class="flex justify-end border-b border-gray-200 px-3 py-2.5 dark:border-white/10">
+            <button
+                @click="previewSidebarOpen = false; localStorage.setItem('fm-preview-sidebar', 'false')"
+                class="flex size-6 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                title="{{ __('filament-file-manager::file-manager.sidebar.hide_preview') }}"
+            >
+                <x-filament::icon icon="heroicon-m-chevron-right" class="size-4" />
+            </button>
+        </div>
+        <div class="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
+            <x-filament::icon icon="heroicon-o-document-magnifying-glass" class="size-10 text-gray-300 dark:text-gray-600" />
+            <p class="text-sm text-gray-400 dark:text-gray-500">{{ __('filament-file-manager::file-manager.misc.select_file_preview') }}</p>
+        </div>
     </div>
 
     {{-- Preview content --}}
     <div
         x-show="previewFile"
         x-cloak
-        class="flex w-full flex-col border-l border-gray-200 bg-white dark:border-white/10 dark:bg-gray-900"
+        class="flex h-full w-full flex-col border-l border-gray-200 bg-white dark:border-white/10 dark:bg-gray-900"
     >
         {{-- Header --}}
         <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-white/10">
@@ -20,13 +31,23 @@
                 class="truncate text-sm font-semibold text-gray-900 dark:text-white"
                 x-text="previewFile?.name"
             ></h3>
-            <button
-                @click="previewFile = null"
-                type="button"
-                class="flex size-7 shrink-0 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
-            >
-                <x-filament::icon icon="heroicon-m-x-mark" class="size-4" />
-            </button>
+            <div class="flex shrink-0 items-center gap-1">
+                <button
+                    @click="previewFile = null"
+                    type="button"
+                    class="flex size-7 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                >
+                    <x-filament::icon icon="heroicon-m-x-mark" class="size-4" />
+                </button>
+                <button
+                    @click="previewSidebarOpen = false; localStorage.setItem('fm-preview-sidebar', 'false')"
+                    type="button"
+                    class="flex size-7 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                    title="{{ __('filament-file-manager::file-manager.sidebar.hide_preview') }}"
+                >
+                    <x-filament::icon icon="heroicon-m-chevron-right" class="size-4" />
+                </button>
+            </div>
         </div>
 
         {{-- Scrollable content --}}
