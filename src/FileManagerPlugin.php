@@ -46,7 +46,7 @@ class FileManagerPlugin implements Plugin
                 FileManagerPage::class,
             ])
             ->assets([
-                Css::make('filament-file-manager-styles', __DIR__.'/../resources/dist/file-manager.css'),
+                Css::make('filament-file-manager-styles', __DIR__ . '/../resources/dist/file-manager.css'),
             ]);
     }
 
