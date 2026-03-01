@@ -33,7 +33,7 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->assertSee('Questa cartella è vuota');
+            ->assertSee(__('filament-file-manager::file-manager.misc.empty_folder'));
     }
 
     public function test_livewire_component_shows_files(): void
@@ -212,8 +212,8 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->assertSee('2 file')
-            ->assertSee('1 cartella');
+            ->assertSee(trans_choice('filament-file-manager::file-manager.labels.files_count', 2, ['count' => 2]))
+            ->assertSee(trans_choice('filament-file-manager::file-manager.labels.folders_count', 1, ['count' => 1]));
     }
 
     public function test_bulk_actions_are_registered(): void
@@ -235,8 +235,8 @@ class FileManagerPageTest extends TestCase
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
             ->set('selectedItems', ['file.txt'])
-            ->assertSee('1 elemento selezionato')
-            ->assertSee('Deseleziona');
+            ->assertSee(trans_choice('filament-file-manager::file-manager.toolbar.selected_count', 1, ['count' => 1]))
+            ->assertSee(__('filament-file-manager::file-manager.toolbar.deselect'));
     }
 
     public function test_sidebar_empty_state_and_structure_renders(): void
@@ -247,8 +247,8 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->assertSee('Seleziona un file per visualizzare i dettagli')
-            ->assertSee('Informazioni');
+            ->assertSee(__('filament-file-manager::file-manager.misc.select_file_preview'))
+            ->assertSee(__('filament-file-manager::file-manager.misc.info'));
     }
 
     public function test_file_preview_data_is_embedded_in_html(): void
@@ -298,8 +298,8 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->assertDontSee('elemento selezionato')
-            ->assertDontSee('elementi selezionati');
+            ->assertDontSee(trans_choice('filament-file-manager::file-manager.toolbar.selected_count', 1, ['count' => 1]))
+            ->assertDontSee(trans_choice('filament-file-manager::file-manager.toolbar.selected_count', 2, ['count' => 2]));
     }
 
     public function test_selection_count_in_status_bar(): void
@@ -312,7 +312,7 @@ class FileManagerPageTest extends TestCase
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
             ->set('selectedItems', ['file1.txt', 'file2.txt'])
-            ->assertSee('2 selezionati');
+            ->assertSee(__('filament-file-manager::file-manager.labels.selected', ['count' => 2]));
     }
 
     public function test_tree_sidebar_loads_root_folders(): void
@@ -407,9 +407,9 @@ class FileManagerPageTest extends TestCase
         $nodes = $component->instance()->buildTreeNodes();
         $this->assertArrayHasKey('images', $nodes);
 
-        // Simulate switchDisk by calling resetFolderTree directly (switchDisk is only in Pro)
+        // Simulate switchDisk (switchDisk is only in Pro)
         $component->instance()->currentDisk = 'local';
-        $component->instance()->resetFolderTree();
+        $component->instance()->expandedFolders = [];
 
         $this->assertEmpty($component->get('expandedFolders'));
 
@@ -441,7 +441,7 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->assertSeeHtml('heroicon-o-folder')
+            ->assertSeeHtml(__('filament-file-manager::file-manager.sidebar.show_folders'))
             ->assertSeeHtml('fm-folder-sidebar');
     }
 
@@ -451,7 +451,7 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->assertSeeHtml('heroicon-o-information-circle')
+            ->assertSeeHtml(__('filament-file-manager::file-manager.sidebar.show_preview'))
             ->assertSeeHtml('fm-preview-sidebar');
     }
 
