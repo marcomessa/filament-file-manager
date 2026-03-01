@@ -55,7 +55,7 @@ class FileOperationsTest extends TestCase
         $file = UploadedFile::fake()->create('script.php', 100);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Tipo di file non consentito');
+        $this->expectExceptionMessage(__('filament-file-manager::file-manager.messages.file_type_not_allowed', ['name' => 'script.php']));
 
         $this->service->upload('public', '', $file);
     }
@@ -97,7 +97,7 @@ class FileOperationsTest extends TestCase
         Storage::disk('public')->put('file-b.txt', 'b');
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('esiste già');
+        $this->expectExceptionMessage(__('filament-file-manager::file-manager.messages.name_already_exists', ['name' => 'file-b.txt']));
 
         $this->service->rename('public', 'file-a.txt', 'file-b.txt');
     }
@@ -107,7 +107,7 @@ class FileOperationsTest extends TestCase
         Storage::disk('public')->put('safe.txt', 'content');
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Tipo di file non consentito');
+        $this->expectExceptionMessage(__('filament-file-manager::file-manager.messages.file_type_not_allowed', ['name' => 'evil.php']));
 
         $this->service->rename('public', 'safe.txt', 'evil.php');
     }

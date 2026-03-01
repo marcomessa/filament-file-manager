@@ -30,6 +30,13 @@ return [
         'confirm_selection' => 'Conferma selezione',
         'browse' => 'Sfoglia',
         'select_file' => 'Seleziona file',
+        'check_updates' => 'Controlla aggiornamenti',
+        'update_available_title' => 'Aggiornamento disponibile',
+        'update_available_body' => 'La versione :latest è disponibile (attuale: :current).',
+        'up_to_date_title' => 'Aggiornato',
+        'up_to_date_body' => 'Stai usando la versione più recente (:current).',
+        'update_check_failed_title' => 'Verifica fallita',
+        'update_check_failed_body' => 'Impossibile verificare gli aggiornamenti. Riprova più tardi.',
     ],
 
     'messages' => [
@@ -68,6 +75,16 @@ return [
         'deletion_warning' => 'Questa azione non può essere annullata. Vuoi procedere?',
         'bulk_deletion_warning' => 'Stai per eliminare :count elementi. Questa azione non può essere annullata.',
         'close' => 'Chiudi',
+    ],
+
+    'sidebar' => [
+        'folders' => 'Cartelle',
+        'expand' => 'Espandi',
+        'collapse' => 'Comprimi',
+        'empty' => '(vuota)',
+        'show_folders' => 'Mostra cartelle',
+        'show_preview' => 'Mostra anteprima',
+        'hide_preview' => 'Nascondi anteprima',
     ],
 
     'misc' => [

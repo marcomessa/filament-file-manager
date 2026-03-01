@@ -33,7 +33,7 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->assertSee('Questa cartella è vuota');
+            ->assertSee(__('filament-file-manager::file-manager.misc.empty_folder'));
     }
 
     public function test_livewire_component_shows_files(): void
@@ -212,8 +212,8 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->assertSee('2 file')
-            ->assertSee('1 cartella');
+            ->assertSee(trans_choice('filament-file-manager::file-manager.labels.files_count', 2, ['count' => 2]))
+            ->assertSee(trans_choice('filament-file-manager::file-manager.labels.folders_count', 1, ['count' => 1]));
     }
 
     public function test_bulk_actions_are_registered(): void
@@ -235,8 +235,8 @@ class FileManagerPageTest extends TestCase
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
             ->set('selectedItems', ['file.txt'])
-            ->assertSee('1 elemento selezionato')
-            ->assertSee('Deseleziona');
+            ->assertSee(trans_choice('filament-file-manager::file-manager.toolbar.selected_count', 1, ['count' => 1]))
+            ->assertSee(__('filament-file-manager::file-manager.toolbar.deselect'));
     }
 
     public function test_sidebar_empty_state_and_structure_renders(): void
@@ -247,8 +247,8 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->assertSee('Seleziona un file per visualizzare i dettagli')
-            ->assertSee('Informazioni');
+            ->assertSee(__('filament-file-manager::file-manager.misc.select_file_preview'))
+            ->assertSee(__('filament-file-manager::file-manager.misc.info'));
     }
 
     public function test_file_preview_data_is_embedded_in_html(): void
@@ -298,8 +298,8 @@ class FileManagerPageTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->assertDontSee('elemento selezionato')
-            ->assertDontSee('elementi selezionati');
+            ->assertDontSee(trans_choice('filament-file-manager::file-manager.toolbar.selected_count', 1, ['count' => 1]))
+            ->assertDontSee(trans_choice('filament-file-manager::file-manager.toolbar.selected_count', 2, ['count' => 2]));
     }
 
     public function test_selection_count_in_status_bar(): void
@@ -312,7 +312,147 @@ class FileManagerPageTest extends TestCase
 
         Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
             ->set('selectedItems', ['file1.txt', 'file2.txt'])
-            ->assertSee('2 selezionati');
+            ->assertSee(__('filament-file-manager::file-manager.labels.selected', ['count' => 2]));
+    }
+
+    public function test_tree_sidebar_loads_root_folders(): void
+    {
+        Storage::disk('public')->makeDirectory('documents');
+        Storage::disk('public')->makeDirectory('images');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class);
+
+        $nodes = $component->instance()->buildTreeNodes();
+        $this->assertArrayHasKey('', $nodes);
+
+        $rootNames = array_column($nodes[''], 'name');
+        $this->assertContains('documents', $rootNames);
+        $this->assertContains('images', $rootNames);
+    }
+
+    public function test_expand_tree_folder_loads_children(): void
+    {
+        Storage::disk('public')->makeDirectory('images/vacation');
+        Storage::disk('public')->makeDirectory('images/work');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
+            ->call('toggleTreeFolder', 'images');
+
+        $this->assertContains('images', $component->get('expandedFolders'));
+
+        $nodes = $component->instance()->buildTreeNodes();
+        $this->assertArrayHasKey('images', $nodes);
+
+        $childNames = array_column($nodes['images'], 'name');
+        $this->assertContains('vacation', $childNames);
+        $this->assertContains('work', $childNames);
+    }
+
+    public function test_collapse_tree_folder(): void
+    {
+        Storage::disk('public')->makeDirectory('images');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
+            ->call('toggleTreeFolder', 'images')
+            ->assertSet('expandedFolders', ['images'])
+            ->call('toggleTreeFolder', 'images');
+
+        $this->assertNotContains('images', $component->get('expandedFolders'));
+    }
+
+    public function test_navigate_via_tree_expands_ancestors(): void
+    {
+        Storage::disk('public')->makeDirectory('images/vacation/beach');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
+            ->call('navigateViaTree', 'images/vacation/beach');
+
+        $this->assertSame('images/vacation/beach', $component->get('currentPath'));
+        $this->assertContains('images', $component->get('expandedFolders'));
+        $this->assertContains('images/vacation', $component->get('expandedFolders'));
+        $this->assertContains('images/vacation/beach', $component->get('expandedFolders'));
+    }
+
+    public function test_switch_disk_resets_tree_state(): void
+    {
+        Storage::fake('local');
+        Storage::disk('public')->makeDirectory('images');
+        Storage::disk('local')->makeDirectory('backups');
+
+        config(['filament-file-manager.disks' => [
+            'public' => ['label' => 'Public'],
+            'local' => ['label' => 'Local'],
+        ]]);
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
+            ->call('toggleTreeFolder', 'images');
+
+        $this->assertContains('images', $component->get('expandedFolders'));
+
+        $nodes = $component->instance()->buildTreeNodes();
+        $this->assertArrayHasKey('images', $nodes);
+
+        // Simulate switchDisk (switchDisk is only in Pro)
+        $component->instance()->currentDisk = 'local';
+        $component->instance()->expandedFolders = [];
+
+        $this->assertEmpty($component->get('expandedFolders'));
+
+        $nodes = $component->instance()->buildTreeNodes();
+        $this->assertArrayHasKey('', $nodes);
+
+        $rootNames = array_column($nodes[''], 'name');
+        $this->assertContains('backups', $rootNames);
+    }
+
+    public function test_navigate_via_breadcrumbs_syncs_tree(): void
+    {
+        Storage::disk('public')->makeDirectory('images/vacation');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
+            ->call('navigateTo', 'images/vacation');
+
+        // Tree should auto-expand ancestors when navigating
+        $this->assertContains('images', $component->get('expandedFolders'));
+        $this->assertContains('images/vacation', $component->get('expandedFolders'));
+    }
+
+    public function test_folder_sidebar_renders_collapsed_icon(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
+            ->assertSeeHtml(__('filament-file-manager::file-manager.sidebar.show_folders'))
+            ->assertSeeHtml('fm-folder-sidebar');
+    }
+
+    public function test_preview_sidebar_renders_collapsed_icon(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
+            ->assertSeeHtml(__('filament-file-manager::file-manager.sidebar.show_preview'))
+            ->assertSeeHtml('fm-preview-sidebar');
     }
 
     /**

@@ -41,7 +41,7 @@ class FolderOperationsTest extends TestCase
         Storage::disk('public')->makeDirectory('existing');
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('esiste già');
+        $this->expectExceptionMessage(__('filament-file-manager::file-manager.messages.folder_already_exists', ['name' => 'existing']));
 
         $this->service->createFolder('public', '', 'existing');
     }

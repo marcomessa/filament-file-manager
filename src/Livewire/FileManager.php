@@ -10,6 +10,7 @@ use Filament\Forms\Contracts\HasForms;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use MmesDesign\FilamentFileManager\Concerns\HandlesFileOperations;
+use MmesDesign\FilamentFileManager\Concerns\HandlesFolderTree;
 use MmesDesign\FilamentFileManager\Concerns\HandlesNavigation;
 use MmesDesign\FilamentFileManager\Concerns\HandlesSelection;
 use MmesDesign\FilamentFileManager\Enums\SortDirection;
@@ -22,6 +23,7 @@ use MmesDesign\FilamentFileManager\Services\ThumbnailService;
 class FileManager extends Component implements HasActions, HasForms
 {
     use HandlesFileOperations;
+    use HandlesFolderTree;
     use HandlesNavigation;
     use HandlesSelection;
     use InteractsWithActions;
@@ -95,6 +97,7 @@ class FileManager extends Component implements HasActions, HasForms
 
         return view('filament-file-manager::livewire.file-manager', [
             'listing' => $listing,
+            'treeNodes' => $this->buildTreeNodes(),
         ]);
     }
 }

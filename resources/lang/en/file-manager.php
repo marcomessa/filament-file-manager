@@ -30,6 +30,13 @@ return [
         'confirm_selection' => 'Confirm selection',
         'browse' => 'Browse',
         'select_file' => 'Select file',
+        'check_updates' => 'Check for updates',
+        'update_available_title' => 'Update available',
+        'update_available_body' => 'Version :latest is available (current: :current).',
+        'up_to_date_title' => 'Up to date',
+        'up_to_date_body' => 'You are running the latest version (:current).',
+        'update_check_failed_title' => 'Check failed',
+        'update_check_failed_body' => 'Unable to check for updates. Please try again later.',
     ],
 
     'messages' => [
@@ -68,6 +75,16 @@ return [
         'deletion_warning' => 'This action cannot be undone. Do you want to proceed?',
         'bulk_deletion_warning' => 'You are about to delete :count items. This action cannot be undone.',
         'close' => 'Close',
+    ],
+
+    'sidebar' => [
+        'folders' => 'Folders',
+        'expand' => 'Expand',
+        'collapse' => 'Collapse',
+        'empty' => '(empty)',
+        'show_folders' => 'Show folders',
+        'show_preview' => 'Show preview',
+        'hide_preview' => 'Hide preview',
     ],
 
     'misc' => [

@@ -285,7 +285,7 @@ class FileManagerPickerTest extends TestCase
 
         Livewire::test(FileManagerPicker::class, ['multiple' => false])
             ->call('toggleSelection', 'file1.txt')
-            ->assertSee('1 file selezionato');
+            ->assertSee(__('filament-file-manager::file-manager.labels.file_selected'));
     }
 
     public function test_multiple_mode_status_bar_shows_plural_text(): void
@@ -299,7 +299,7 @@ class FileManagerPickerTest extends TestCase
         Livewire::test(FileManagerPicker::class, ['multiple' => true])
             ->call('toggleSelection', 'file1.txt')
             ->call('toggleSelection', 'file2.txt')
-            ->assertSee('2 selezionati');
+            ->assertSee(__('filament-file-manager::file-manager.labels.selected', ['count' => 2]));
     }
 
     public function test_select_all_is_noop_in_single_mode(): void
