@@ -43,8 +43,26 @@
         }
     }"
     @keydown.window="handleKeydown($event)"
-    class="flex h-full gap-4"
+    class="flex h-full flex-col"
 >
+    {{-- Disk switcher (visible only if Pro and multiple disks) --}}
+    @if (method_exists($this, 'getAvailableDisks') && count($this->getAvailableDisks()) > 1)
+        <div class="mb-4">
+            <select
+                wire:change="switchDisk($event.target.value)"
+                class="fm-select"
+            >
+                @foreach ($this->getAvailableDisks() as $diskName => $diskConfig)
+                    <option value="{{ $diskName }}" @selected($currentDisk === $diskName)>
+                        {{ $diskConfig['label'] ?? $diskName }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+    @endif
+
+    {{-- Main layout --}}
+    <div class="flex min-h-0 flex-1 gap-4">
     {{-- Folder tree sidebar (left) --}}
     <div class="hidden shrink-0 self-stretch lg:flex">
         {{-- Collapsed --}}
@@ -175,6 +193,7 @@
         >
             <x-filament::icon icon="heroicon-o-information-circle" class="size-5" />
         </button>
+    </div>
     </div>
 
     <x-filament-actions::modals />
