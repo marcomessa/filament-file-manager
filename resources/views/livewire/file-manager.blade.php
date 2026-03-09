@@ -44,6 +44,7 @@
     }"
     @keydown.window="handleKeydown($event)"
     class="flex h-full flex-col"
+    data-fm-container
 >
     {{-- Disk switcher (visible only if Pro and multiple disks) --}}
     @if (method_exists($this, 'getAvailableDisks') && count($this->getAvailableDisks()) > 1)
