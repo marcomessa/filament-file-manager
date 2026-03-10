@@ -54,6 +54,7 @@ return [
         'file_type_not_allowed' => 'Tipo di file non consentito: :name',
         'folder_already_exists' => "La cartella ':name' esiste già.",
         'name_already_exists' => "':name' esiste già.",
+        'extension_changed' => "Cambiare l'estensione del file potrebbe renderlo inutilizzabile.",
     ],
 
     'labels' => [

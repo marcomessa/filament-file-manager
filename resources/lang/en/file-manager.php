@@ -54,6 +54,7 @@ return [
         'file_type_not_allowed' => 'File type not allowed: :name',
         'folder_already_exists' => "Folder ':name' already exists.",
         'name_already_exists' => "':name' already exists.",
+        'extension_changed' => 'Changing the file extension may make the file unusable.',
     ],
 
     'labels' => [

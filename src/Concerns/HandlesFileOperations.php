@@ -113,7 +113,12 @@ trait HandlesFileOperations
             ->label(__('filament-file-manager::file-manager.actions.rename'))
             ->icon('heroicon-o-pencil')
             ->color('gray')
+            ->fillForm(fn (array $arguments): array => [
+                'newName' => basename($arguments['path'] ?? ''),
+                'originalExtension' => pathinfo(basename($arguments['path'] ?? ''), PATHINFO_EXTENSION),
+            ])
             ->schema([
+                Forms\Components\Hidden::make('originalExtension'),
                 Forms\Components\TextInput::make('newName')
                     ->label(__('filament-file-manager::file-manager.labels.new_name'))
                     ->required()
@@ -121,7 +126,33 @@ trait HandlesFileOperations
                     ->regex('/^[^\/\\\\]+$/')
                     ->validationMessages([
                         'regex' => __('filament-file-manager::file-manager.labels.name_validation'),
-                    ]),
+                    ])
+                    ->extraInputAttributes([
+                        'x-init' => "setTimeout(() => { const dot = \$el.value.lastIndexOf('.'); \$el.focus(); if (dot > 0) { \$el.setSelectionRange(0, dot); } else { \$el.select(); } }, 50)",
+                    ])
+                    ->live(debounce: 500)
+                    ->hint(function (?string $state, \Filament\Schemas\Components\Utilities\Get $get): ?string {
+                        $original = $get('originalExtension');
+                        if (! $original) {
+                            return null;
+                        }
+                        $current = strtolower(pathinfo($state ?? '', PATHINFO_EXTENSION));
+                        if ($current !== strtolower($original)) {
+                            return __('filament-file-manager::file-manager.messages.extension_changed');
+                        }
+
+                        return null;
+                    })
+                    ->hintColor('warning')
+                    ->hintIcon(function (?string $state, \Filament\Schemas\Components\Utilities\Get $get): ?string {
+                        $original = $get('originalExtension');
+                        if (! $original) {
+                            return null;
+                        }
+                        $current = strtolower(pathinfo($state ?? '', PATHINFO_EXTENSION));
+
+                        return $current !== strtolower($original) ? 'heroicon-o-exclamation-triangle' : null;
+                    }),
             ])
             ->action(function (array $data, array $arguments): void {
                 $service = app(FileManagerService::class);
