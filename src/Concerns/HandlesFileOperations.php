@@ -6,6 +6,8 @@ use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Number;
+use Illuminate\Validation\ValidationException;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use MmesDesign\FilamentFileManager\Enums\FileCategory;
@@ -29,10 +31,15 @@ trait HandlesFileOperations
                 Forms\Components\FileUpload::make('files')
                     ->label(__('filament-file-manager::file-manager.labels.file'))
                     ->multiple()
-                    ->maxSize(config('filament-file-manager.max_upload_size', 51200))
+                    ->maxSize($maxSizeKb = (int) config('filament-file-manager.max_upload_size', 51200))
                     ->maxFiles(config('filament-file-manager.max_uploads_per_batch', 20))
                     ->storeFiles(false)
-                    ->required(),
+                    ->required()
+                    ->validationMessages([
+                        'max' => __('filament-file-manager::file-manager.messages.file_too_large', [
+                            'max' => Number::fileSize($maxSizeKb * 1024, precision: 0),
+                        ]),
+                    ]),
             ])
             ->action(function (array $data): void {
                 $service = app(FileManagerService::class);
@@ -269,5 +276,51 @@ trait HandlesFileOperations
         $service = app(FileManagerService::class);
 
         return $service->download($this->currentDisk, $path);
+    }
+
+    /**
+     * Override Livewire's _uploadErrored to replace the cryptic default message
+     * (e.g. "The mountedActions.0.data.files.{uuid} failed to upload.")
+     * with a human-readable error that includes the effective max file size.
+     */
+    public function _uploadErrored(string $name, ?string $errorsInJson, bool $isMultiple): void
+    {
+        $this->dispatch('upload:errored', name: $name)->self();
+
+        $formatted = Number::fileSize($this->getEffectiveUploadLimit() * 1024, precision: 0);
+        $message = __('filament-file-manager::file-manager.messages.upload_failed', ['max' => $formatted]);
+
+        throw ValidationException::withMessages([$name => $message]);
+    }
+
+    /**
+     * Get the effective upload limit in KB, considering the plugin config
+     * and PHP's upload_max_filesize / post_max_size directives.
+     */
+    private function getEffectiveUploadLimit(): int
+    {
+        $pluginMax = (int) config('filament-file-manager.max_upload_size', 51200);
+
+        $phpUploadMax = $this->phpIniToKb(ini_get('upload_max_filesize') ?: '2M');
+        $phpPostMax = $this->phpIniToKb(ini_get('post_max_size') ?: '8M');
+
+        return min($pluginMax, $phpUploadMax, $phpPostMax);
+    }
+
+    /**
+     * Convert a PHP ini shorthand value (e.g. "128M", "2G") to kilobytes.
+     */
+    private function phpIniToKb(string $value): int
+    {
+        $value = trim($value);
+        $unit = strtolower(substr($value, -1));
+        $bytes = (int) $value;
+
+        return match ($unit) {
+            'g' => $bytes * 1024 * 1024,
+            'm' => $bytes * 1024,
+            'k' => $bytes,
+            default => (int) ceil($bytes / 1024),
+        };
     }
 }

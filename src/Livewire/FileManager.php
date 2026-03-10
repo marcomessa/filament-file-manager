@@ -22,12 +22,13 @@ use MmesDesign\FilamentFileManager\Services\ThumbnailService;
 
 class FileManager extends Component implements HasActions, HasForms
 {
-    use HandlesFileOperations;
     use HandlesFolderTree;
     use HandlesNavigation;
     use HandlesSelection;
     use InteractsWithActions;
-    use InteractsWithForms;
+    use HandlesFileOperations, InteractsWithForms {
+        HandlesFileOperations::_uploadErrored insteadof InteractsWithForms;
+    }
 
     public string $currentDisk = '';
 

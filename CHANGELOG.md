@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.1.1 - 2026-03-09
+
+### Fixed
+- Upload error now shows a human-readable message (e.g. "The file must not exceed 2 MB") instead of the cryptic Livewire field path with UUID
+- Error message reflects the effective upload limit — the minimum of the plugin config, PHP `upload_max_filesize`, and `post_max_size`
+- Context menu now only activates within the FileManager container (`data-fm-container` attribute), preventing conflicts with other page elements
+
+### Added
+- `validationMessages()` on the FileUpload component for Filament-level validation
+- Translation keys `messages.file_too_large` and `messages.upload_failed` (EN + IT)
+- Override of Livewire's `_uploadErrored` in `HandlesFileOperations` with trait conflict resolution in `FileManager`
+- Tailwind CSS source configuration instructions in README for custom theme builds
+
 ## v1.1.0 - 2026-03-01
 
 ### Added

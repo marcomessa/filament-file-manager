@@ -49,6 +49,8 @@ return [
         'items_moved' => ':count elementi spostati',
         'item_moved' => "':name' spostato in ':destination'",
         'move_error' => 'Errore durante lo spostamento',
+        'file_too_large' => 'Il file non può superare :max.',
+        'upload_failed' => 'Caricamento fallito. Il file non può superare :max.',
         'file_type_not_allowed' => 'Tipo di file non consentito: :name',
         'folder_already_exists' => "La cartella ':name' esiste già.",
         'name_already_exists' => "':name' esiste già.",
