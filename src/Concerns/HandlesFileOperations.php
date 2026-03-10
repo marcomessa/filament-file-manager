@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use MmesDesign\FilamentFileManager\Enums\FileCategory;
+use MmesDesign\FilamentFileManager\Forms\Components\FolderTreePicker;
 use MmesDesign\FilamentFileManager\Services\FileManagerService;
 use MmesDesign\FilamentFileManager\Services\FileTypeResolver;
 
@@ -263,11 +264,10 @@ trait HandlesFileOperations
             ->icon('heroicon-o-arrow-right')
             ->color('gray')
             ->schema([
-                Forms\Components\TextInput::make('destination')
+                FolderTreePicker::make('destination')
                     ->label(__('filament-file-manager::file-manager.labels.destination_folder'))
-                    ->placeholder(__('filament-file-manager::file-manager.labels.destination_placeholder'))
-                    ->helperText(__('filament-file-manager::file-manager.labels.destination_helper'))
-                    ->maxLength(255),
+                    ->disk($this->currentDisk)
+                    ->default(''),
             ])
             ->action(function (array $data): void {
                 $service = app(FileManagerService::class);

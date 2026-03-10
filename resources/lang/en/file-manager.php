@@ -71,6 +71,7 @@ return [
         'selected' => ':count selected',
         'file_selected' => '1 file selected',
         'no_file_selected' => 'No file selected',
+        'root' => 'Root',
     ],
 
     'modals' => [
