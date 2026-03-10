@@ -9,6 +9,9 @@
         handleKeydown(e) {
             // Escape: close sidebar preview, or clear selection
             if (e.key === 'Escape') {
+                if ($wire.mountedActions.length > 0) {
+                    return;
+                }
                 if (this.previewFile) {
                     this.previewFile = null;
                     return;
