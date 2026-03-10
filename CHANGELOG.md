@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.1.2 - 2026-03-10
+
+### Added
+- Rename action now pre-fills the field with the current filename and auto-selects only the name part (before the extension)
+- Warning hint with icon when the file extension is changed during rename
+- Translation key `messages.extension_changed` (EN + IT)
+
 ## v1.1.1 - 2026-03-09
 
 ### Fixed
