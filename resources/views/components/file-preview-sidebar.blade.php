@@ -70,8 +70,27 @@
                     />
                 </template>
 
-                {{-- Category icon for non-images --}}
-                <template x-if="!previewFile?.isImage && !previewFile?.thumbnailUrl">
+                {{-- Audio player --}}
+                <template x-if="previewFile?.category === 'audio' && previewFile?.url">
+                    <div class="flex w-full flex-col items-center gap-4">
+                        <div class="flex size-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-500/10">
+                            <x-filament::icon icon="heroicon-o-musical-note" class="size-8 text-green-500" />
+                        </div>
+                        <audio controls preload="metadata" class="w-full" :src="previewFile.url">
+                            {{ __('filament-file-manager::file-manager.misc.audio_not_supported') }}
+                        </audio>
+                    </div>
+                </template>
+
+                {{-- Video player --}}
+                <template x-if="previewFile?.category === 'video' && previewFile?.url">
+                    <video controls preload="metadata" class="max-h-full w-full rounded-lg" :src="previewFile.url">
+                        {{ __('filament-file-manager::file-manager.misc.video_not_supported') }}
+                    </video>
+                </template>
+
+                {{-- Category icon for other types --}}
+                <template x-if="!previewFile?.isImage && !previewFile?.thumbnailUrl && !(previewFile?.category === 'audio' && previewFile?.url) && !(previewFile?.category === 'video' && previewFile?.url)">
                     <div class="flex flex-col items-center gap-3">
                         <x-filament::icon x-show="previewFile?.category === 'image'" icon="heroicon-o-photo" class="size-16 text-purple-500" />
                         <x-filament::icon x-show="previewFile?.category === 'document'" icon="heroicon-o-document-text" class="size-16 text-blue-500" />

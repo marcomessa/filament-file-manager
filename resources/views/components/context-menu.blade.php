@@ -34,7 +34,7 @@
     }"
     x-ref="contextMenu"
     @click.window="close()"
-    @contextmenu.window="if (!$event.target.closest('[data-context-target]')) { show($event, null, 'background'); $event.preventDefault(); }"
+    @contextmenu.window="if ($event.target.closest('[data-fm-content]') && !$event.target.closest('[data-context-target]')) { show($event, null, 'background'); $event.preventDefault(); }"
     @keydown.escape.window="close()"
     class="contents"
 >

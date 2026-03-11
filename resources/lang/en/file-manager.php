@@ -49,9 +49,12 @@ return [
         'items_moved' => ':count items moved',
         'item_moved' => "':name' moved to ':destination'",
         'move_error' => 'Error during move',
+        'file_too_large' => 'The file must not exceed :max.',
+        'upload_failed' => 'Upload failed. The file must not exceed :max.',
         'file_type_not_allowed' => 'File type not allowed: :name',
         'folder_already_exists' => "Folder ':name' already exists.",
         'name_already_exists' => "':name' already exists.",
+        'extension_changed' => 'Changing the file extension may make the file unusable.',
     ],
 
     'labels' => [
@@ -68,6 +71,7 @@ return [
         'selected' => ':count selected',
         'file_selected' => '1 file selected',
         'no_file_selected' => 'No file selected',
+        'root' => 'Root',
     ],
 
     'modals' => [

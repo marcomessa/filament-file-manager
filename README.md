@@ -45,6 +45,12 @@ public function panel(Panel $panel): Panel
 }
 ```
 
+Add the package to your Tailwind CSS sources in `resources/css/app.css`:
+
+```css
+@source '../../vendor/mmes-design/filament-file-manager';
+```
+
 Publish the assets:
 
 ```bash
