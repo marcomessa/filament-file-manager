@@ -93,7 +93,7 @@
         @include('filament-file-manager::components.breadcrumbs')
 
         {{-- Content --}}
-        <div class="flex min-h-0 flex-1 flex-col rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10" @click="previewFile = null">
+        <div class="flex min-h-0 flex-1 flex-col rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10" data-fm-content @click="previewFile = null">
             @if ($listing && !$listing->isEmpty())
                 @if ($viewMode === 'grid')
                     <div class="flex-1 overflow-y-auto">
