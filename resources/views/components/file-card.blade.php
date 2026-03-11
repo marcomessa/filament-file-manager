@@ -49,8 +49,8 @@
             >
                 <input
                     type="checkbox"
-                    wire:click="toggleSelection('{{ $item->path }}')"
-                    @checked($isSelected)
+                    wire:model.live="selectedItems"
+                    value="{{ $item->path }}"
                     class="size-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-white/20 dark:bg-white/5"
                     @click.stop
                 />
@@ -136,8 +136,8 @@
             >
                 <input
                     type="checkbox"
-                    wire:click="toggleSelection('{{ $item->path }}')"
-                    @checked($isSelected)
+                    wire:model.live="selectedItems"
+                    value="{{ $item->path }}"
                     class="size-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-white/20 dark:bg-white/5"
                     @click.stop
                 />
