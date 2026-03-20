@@ -1,6 +1,14 @@
 <div class="flex h-full flex-col gap-4">
     {{-- Toolbar --}}
-    <div class="flex flex-wrap items-center justify-end gap-3">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        {{-- Left: actions --}}
+        <div class="flex items-center gap-1">
+            {{ $this->uploadFilesAction }}
+            {{ $this->createFolderAction }}
+            {{ $this->refreshAction }}
+        </div>
+
+        {{-- Right: sort + view mode --}}
         <div class="flex items-center gap-2">
             {{-- Sort dropdown --}}
             <select
@@ -174,4 +182,6 @@
             @endif
         </button>
     </div>
+
+    <x-filament-actions::modals />
 </div>

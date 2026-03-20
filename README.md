@@ -97,6 +97,9 @@ return [
     'max_upload_size' => 50 * 1024,    // 50 MB in KB
     'max_uploads_per_batch' => 20,
 
+    // Infinite scroll: files loaded per batch (folders always load fully)
+    'per_page' => 50,
+
     // Thumbnail settings
     'thumbnails' => [
         'enabled' => true,
