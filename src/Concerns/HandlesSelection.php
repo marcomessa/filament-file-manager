@@ -4,7 +4,6 @@ namespace MmesDesign\FilamentFileManager\Concerns;
 
 use MmesDesign\FilamentFileManager\Enums\SortDirection;
 use MmesDesign\FilamentFileManager\Enums\SortField;
-use MmesDesign\FilamentFileManager\Services\FileManagerService;
 
 trait HandlesSelection
 {
@@ -36,9 +35,7 @@ trait HandlesSelection
             return;
         }
 
-        $service = app(FileManagerService::class);
-
-        $listing = $service->listDirectory(
+        $listing = $this->fileManagerService->listDirectory(
             disk: $this->currentDisk,
             path: $this->currentPath,
             sortField: SortField::from($this->sortField),

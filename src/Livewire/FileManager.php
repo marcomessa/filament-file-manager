@@ -9,24 +9,35 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use MmesDesign\FilamentFileManager\Concerns\HandlesBulkOperations;
 use MmesDesign\FilamentFileManager\Concerns\HandlesFileOperations;
 use MmesDesign\FilamentFileManager\Concerns\HandlesFolderTree;
 use MmesDesign\FilamentFileManager\Concerns\HandlesNavigation;
 use MmesDesign\FilamentFileManager\Concerns\HandlesPagination;
 use MmesDesign\FilamentFileManager\Concerns\HandlesSelection;
+use MmesDesign\FilamentFileManager\Concerns\HandlesUpload;
 use MmesDesign\FilamentFileManager\Enums\SortDirection;
 use MmesDesign\FilamentFileManager\Enums\ViewMode;
 use MmesDesign\FilamentFileManager\FileManagerPlugin;
+use MmesDesign\FilamentFileManager\Services\FileManagerService;
+use MmesDesign\FilamentFileManager\Services\FileTypeResolver;
+
 class FileManager extends Component implements HasActions, HasForms
 {
+    use HandlesBulkOperations;
+    use HandlesFileOperations;
     use HandlesFolderTree;
     use HandlesNavigation;
     use HandlesPagination;
     use HandlesSelection;
     use InteractsWithActions;
-    use HandlesFileOperations, InteractsWithForms {
-        HandlesFileOperations::_uploadErrored insteadof InteractsWithForms;
+    use HandlesUpload, InteractsWithForms {
+        HandlesUpload::_uploadErrored insteadof InteractsWithForms;
     }
+
+    protected FileManagerService $fileManagerService;
+
+    protected FileTypeResolver $fileTypeResolver;
 
     public string $currentDisk = '';
 
@@ -38,6 +49,12 @@ class FileManager extends Component implements HasActions, HasForms
 
     #[Url]
     public string $sortDirection = 'asc';
+
+    public function boot(FileManagerService $fileManagerService, FileTypeResolver $fileTypeResolver): void
+    {
+        $this->fileManagerService = $fileManagerService;
+        $this->fileTypeResolver = $fileTypeResolver;
+    }
 
     public function mount(): void
     {

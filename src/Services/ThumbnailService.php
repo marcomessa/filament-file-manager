@@ -2,6 +2,7 @@
 
 namespace MmesDesign\FilamentFileManager\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -30,7 +31,15 @@ class ThumbnailService
         $storage = Storage::disk($disk);
 
         if (! $storage->exists($thumbnailPath)) {
+            $failedKey = "fm:thumb_failed:{$disk}:{$path}";
+
+            if (Cache::has($failedKey)) {
+                return null;
+            }
+
             if (! $this->generate($disk, $path)) {
+                Cache::put($failedKey, true, 300);
+
                 return null;
             }
         }

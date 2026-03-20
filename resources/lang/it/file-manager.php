@@ -93,6 +93,16 @@ return [
         'hide_preview' => 'Nascondi anteprima',
     ],
 
+    'file_types' => [
+        'image' => 'Immagine',
+        'document' => 'Documento',
+        'audio' => 'Audio',
+        'video' => 'Video',
+        'archive' => 'Archivio',
+        'code' => 'Codice',
+        'other' => 'Altro',
+    ],
+
     'misc' => [
         'empty_folder' => 'Questa cartella è vuota',
         'empty_folder_hint' => 'Carica file o crea una nuova cartella per iniziare',

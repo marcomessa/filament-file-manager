@@ -339,21 +339,33 @@ class FileManagerService
     }
 
     /**
+     * @template T of FileItem|FolderItem
+     *
+     * @param  array<int, T>  $items
+     * @param  \Closure(T, T, SortField): int  $comparator
+     * @return array<int, T>
+     */
+    protected function sortItems(array $items, SortField $field, SortDirection $direction, \Closure $comparator): array
+    {
+        usort($items, function ($a, $b) use ($field, $direction, $comparator): int {
+            $result = $comparator($a, $b, $field);
+
+            return $direction === SortDirection::Desc ? -$result : $result;
+        });
+
+        return $items;
+    }
+
+    /**
      * @param  array<int, FolderItem>  $folders
      * @return array<int, FolderItem>
      */
     protected function sortFolders(array $folders, SortField $field, SortDirection $direction): array
     {
-        usort($folders, function (FolderItem $a, FolderItem $b) use ($field, $direction): int {
-            $result = match ($field) {
-                SortField::Date => $a->lastModified <=> $b->lastModified,
-                default => strnatcasecmp($a->name, $b->name),
-            };
-
-            return $direction === SortDirection::Desc ? -$result : $result;
+        return $this->sortItems($folders, $field, $direction, fn (FolderItem $a, FolderItem $b, SortField $f): int => match ($f) {
+            SortField::Date => $a->lastModified <=> $b->lastModified,
+            default => strnatcasecmp($a->name, $b->name),
         });
-
-        return $folders;
     }
 
     /**
@@ -362,18 +374,12 @@ class FileManagerService
      */
     protected function sortFiles(array $files, SortField $field, SortDirection $direction): array
     {
-        usort($files, function (FileItem $a, FileItem $b) use ($field, $direction): int {
-            $result = match ($field) {
-                SortField::Name => strnatcasecmp($a->name, $b->name),
-                SortField::Size => $a->size <=> $b->size,
-                SortField::Date => $a->lastModified <=> $b->lastModified,
-                SortField::Type => strnatcasecmp($a->extension, $b->extension),
-            };
-
-            return $direction === SortDirection::Desc ? -$result : $result;
+        return $this->sortItems($files, $field, $direction, fn (FileItem $a, FileItem $b, SortField $f): int => match ($f) {
+            SortField::Name => strnatcasecmp($a->name, $b->name),
+            SortField::Size => $a->size <=> $b->size,
+            SortField::Date => $a->lastModified <=> $b->lastModified,
+            SortField::Type => strnatcasecmp($a->extension, $b->extension),
         });
-
-        return $files;
     }
 
     protected function invalidateCache(string $disk, string $directory): void
@@ -385,6 +391,9 @@ class FileManagerService
         }
     }
 
+    /**
+     * @throws \RuntimeException
+     */
     protected function disk(string $disk): Filesystem
     {
         $this->ensureLocalDisk($disk);

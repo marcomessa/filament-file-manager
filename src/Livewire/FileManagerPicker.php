@@ -10,11 +10,15 @@ use MmesDesign\FilamentFileManager\Concerns\HandlesSelection;
 use MmesDesign\FilamentFileManager\Enums\FileCategory;
 use MmesDesign\FilamentFileManager\Enums\SortDirection;
 use MmesDesign\FilamentFileManager\Enums\ViewMode;
+use MmesDesign\FilamentFileManager\Services\FileManagerService;
+
 class FileManagerPicker extends Component
 {
     use HandlesNavigation;
     use HandlesPagination;
     use HandlesSelection;
+
+    protected FileManagerService $fileManagerService;
 
     public string $currentDisk = '';
 
@@ -30,6 +34,11 @@ class FileManagerPicker extends Component
 
     /** @var array<int, string> */
     public array $acceptedCategories = [];
+
+    public function boot(FileManagerService $fileManagerService): void
+    {
+        $this->fileManagerService = $fileManagerService;
+    }
 
     /**
      * @param  string|array<int, string>|null  $selectedPaths

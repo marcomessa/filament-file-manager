@@ -93,6 +93,16 @@ return [
         'hide_preview' => 'Hide preview',
     ],
 
+    'file_types' => [
+        'image' => 'Image',
+        'document' => 'Document',
+        'audio' => 'Audio',
+        'video' => 'Video',
+        'archive' => 'Archive',
+        'code' => 'Code',
+        'other' => 'Other',
+    ],
+
     'misc' => [
         'empty_folder' => 'This folder is empty',
         'empty_folder_hint' => 'Upload files or create a new folder to get started',

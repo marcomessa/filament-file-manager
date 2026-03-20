@@ -5,7 +5,6 @@ namespace MmesDesign\FilamentFileManager\Concerns;
 use MmesDesign\FilamentFileManager\DTOs\DirectoryListing;
 use MmesDesign\FilamentFileManager\Enums\SortDirection;
 use MmesDesign\FilamentFileManager\Enums\SortField;
-use MmesDesign\FilamentFileManager\Services\FileManagerService;
 
 trait HandlesPagination
 {
@@ -13,7 +12,7 @@ trait HandlesPagination
 
     public function loadMore(): void
     {
-        $service = app(FileManagerService::class);
+        $service = $this->fileManagerService;
 
         $result = $service->listDirectoryPaginated(
             disk: $this->currentDisk,
@@ -46,7 +45,7 @@ trait HandlesPagination
      */
     protected function getPaginatedListing(): array
     {
-        $service = app(FileManagerService::class);
+        $service = $this->fileManagerService;
 
         $result = $service->listDirectoryPaginated(
             disk: $this->currentDisk,

@@ -2,10 +2,12 @@
 
 namespace MmesDesign\FilamentFileManager\DTOs;
 
+use MmesDesign\FilamentFileManager\DTOs\Concerns\HasFormattedDate;
 use MmesDesign\FilamentFileManager\Enums\FileCategory;
 
 readonly class FileItem
 {
+    use HasFormattedDate;
     public const THUMBNAILABLE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'bmp'];
 
     public function __construct(
@@ -35,11 +37,6 @@ readonly class FileItem
         }
 
         return round($this->size / (1024 * 1024 * 1024), 1).' GB';
-    }
-
-    public function formattedDate(): string
-    {
-        return date('d M Y H:i', $this->lastModified);
     }
 
     public function isImage(): bool
