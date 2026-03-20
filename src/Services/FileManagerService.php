@@ -4,6 +4,7 @@ namespace MmesDesign\FilamentFileManager\Services;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use MmesDesign\FilamentFileManager\DTOs\DirectoryListing;
 use MmesDesign\FilamentFileManager\DTOs\FileItem;
@@ -26,7 +27,59 @@ class FileManagerService
         SortField $sortField = SortField::Name,
         SortDirection $sortDirection = SortDirection::Asc,
     ): DirectoryListing {
+        return $this->getCachedListing($disk, $path, $sortField, $sortDirection);
+    }
+
+    /**
+     * @return array{listing: DirectoryListing, totalFiles: int, hasMore: bool}
+     */
+    public function listDirectoryPaginated(
+        string $disk,
+        string $path = '',
+        SortField $sortField = SortField::Name,
+        SortDirection $sortDirection = SortDirection::Asc,
+        int $page = 1,
+        ?int $perPage = null,
+    ): array {
+        $perPage ??= (int) config('filament-file-manager.per_page', 50);
+        $listing = $this->listDirectory($disk, $path, $sortField, $sortDirection);
+
+        $totalFiles = count($listing->files);
+        $limit = $page * $perPage;
+        $paginatedFiles = array_slice($listing->files, 0, $limit);
+
+        return [
+            'listing' => new DirectoryListing(
+                path: $listing->path,
+                disk: $listing->disk,
+                folders: $listing->folders,
+                files: $paginatedFiles,
+            ),
+            'totalFiles' => $totalFiles,
+            'hasMore' => $limit < $totalFiles,
+        ];
+    }
+
+    protected function getCachedListing(
+        string $disk,
+        string $path,
+        SortField $sortField,
+        SortDirection $sortDirection,
+    ): DirectoryListing {
         $path = $path === '' ? '' : $this->pathSanitizer->sanitize($path);
+        $cacheKey = "fm:{$disk}:{$path}:{$sortField->value}:{$sortDirection->value}";
+
+        return Cache::remember($cacheKey, 60, function () use ($disk, $path, $sortField, $sortDirection): DirectoryListing {
+            return $this->buildDirectoryListing($disk, $path, $sortField, $sortDirection);
+        });
+    }
+
+    protected function buildDirectoryListing(
+        string $disk,
+        string $path,
+        SortField $sortField,
+        SortDirection $sortDirection,
+    ): DirectoryListing {
         $storage = $this->disk($disk);
 
         $rawData = $this->fetchDirectoryContents($storage, $path);
@@ -267,7 +320,7 @@ class FileManagerService
 
                 $url = $this->getUrl($disk, $file);
                 $thumbnailUrl = in_array($extension, FileItem::THUMBNAILABLE_EXTENSIONS, true)
-                    ? $this->thumbnailService->getExistingThumbnailUrl($disk, $file)
+                    ? $this->thumbnailService->getThumbnailUrl($disk, $file)
                     : null;
 
                 return new FileItem(
@@ -325,7 +378,11 @@ class FileManagerService
 
     protected function invalidateCache(string $disk, string $directory): void
     {
-        // Remote disk caching available in the Pro package
+        foreach (SortField::cases() as $field) {
+            foreach (SortDirection::cases() as $direction) {
+                Cache::forget("fm:{$disk}:{$directory}:{$field->value}:{$direction->value}");
+            }
+        }
     }
 
     protected function disk(string $disk): Filesystem

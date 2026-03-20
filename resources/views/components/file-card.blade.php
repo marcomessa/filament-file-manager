@@ -112,11 +112,7 @@
         @if (! $pickMode)
             data-context-target
         @endif
-        x-data="{
-            showActions: false,
-            thumbnailUrl: @js($item->thumbnailUrl),
-            loading: false,
-        }"
+        x-data="{ showActions: false }"
         @if (! $pickMode)
             @click.stop
             @mouseenter="showActions = true"
@@ -164,34 +160,6 @@
                         class="size-full object-cover"
                         loading="lazy"
                     />
-                @elseif ($item->isThumbnailable() && $item->url !== null)
-                    <template x-if="thumbnailUrl">
-                        <img
-                            :src="thumbnailUrl"
-                            alt="{{ $item->name }}"
-                            class="size-full object-cover"
-                            loading="lazy"
-                        />
-                    </template>
-                    <template x-if="!thumbnailUrl && !loading">
-                        <div
-                            x-intersect.once="
-                                loading = true;
-                                $wire.generateThumbnail('{{ $item->path }}').then(url => {
-                                    if (url) { thumbnailUrl = url; }
-                                    loading = false;
-                                })
-                            "
-                            class="flex size-full items-center justify-center"
-                        >
-                            <x-filament::icon :icon="$item->category->icon()" @class(['size-10', $item->category->color()]) />
-                        </div>
-                    </template>
-                    <template x-if="!thumbnailUrl && loading">
-                        <div class="flex size-full items-center justify-center">
-                            <div class="size-8 animate-pulse rounded-full bg-gray-200 dark:bg-white/10"></div>
-                        </div>
-                    </template>
                 @else
                     <x-filament::icon :icon="$item->category->icon()" @class(['size-10', $item->category->color()]) />
                 @endif

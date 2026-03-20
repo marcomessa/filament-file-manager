@@ -72,6 +72,8 @@ return [
         'file_selected' => '1 file selezionato',
         'no_file_selected' => 'Nessun file selezionato',
         'root' => 'Root',
+        'showing_of_total' => ':shown di :total file',
+        'loading_more' => 'Caricamento...',
     ],
 
     'modals' => [

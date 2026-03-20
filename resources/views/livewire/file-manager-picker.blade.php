@@ -58,7 +58,9 @@
     @include('filament-file-manager::components.breadcrumbs')
 
     {{-- Content --}}
-    <div class="flex-1 overflow-y-auto rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
+    <div
+        class="flex-1 overflow-y-auto rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10"
+    >
         @if ($listing && !$listing->isEmpty())
             @if ($viewMode === 'grid')
                 <div class="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
@@ -70,6 +72,15 @@
                         @include('filament-file-manager::components.file-card', ['item' => $file, 'isFolder' => false, 'pickMode' => true, 'multiple' => $multiple])
                     @endforeach
                 </div>
+
+                @if ($hasMoreFiles)
+                    <div x-intersect="$wire.loadMore()" wire:key="sentinel-{{ $filePage }}" class="flex items-center justify-center p-4">
+                        <div wire:loading.delay wire:target="loadMore" class="flex items-center gap-2">
+                            <x-filament::loading-indicator class="size-5 text-gray-400 dark:text-gray-500" />
+                            <span class="text-xs text-gray-400 dark:text-gray-500">{{ __('filament-file-manager::file-manager.labels.loading_more') }}</span>
+                        </div>
+                    </div>
+                @endif
             @else
                 <div class="divide-y divide-gray-200 dark:divide-white/10">
                     {{-- List header --}}
@@ -102,6 +113,15 @@
                     @foreach ($listing->files as $file)
                         @include('filament-file-manager::components.file-row', ['item' => $file, 'isFolder' => false, 'pickMode' => true, 'multiple' => $multiple])
                     @endforeach
+
+                    @if ($hasMoreFiles)
+                        <div x-intersect="$wire.loadMore()" wire:key="sentinel-{{ $filePage }}" class="flex items-center justify-center p-4">
+                            <div wire:loading.delay wire:target="loadMore" class="flex items-center gap-2">
+                                <x-filament::loading-indicator class="size-5 text-gray-400 dark:text-gray-500" />
+                                <span class="text-xs text-gray-400 dark:text-gray-500">{{ __('filament-file-manager::file-manager.labels.loading_more') }}</span>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             @endif
 
@@ -120,7 +140,12 @@
                         @endif
                     </span> &mdash;
                 @endif
-                {{ trans_choice('filament-file-manager::file-manager.labels.files_count', $fileCount, ['count' => $fileCount]) }}{{ $folderCount > 0 ? ', ' . trans_choice('filament-file-manager::file-manager.labels.folders_count', $folderCount, ['count' => $folderCount]) : '' }}
+                @if ($hasMoreFiles)
+                    {{ __('filament-file-manager::file-manager.labels.showing_of_total', ['shown' => $fileCount, 'total' => $totalFiles]) }}
+                @else
+                    {{ trans_choice('filament-file-manager::file-manager.labels.files_count', $totalFiles, ['count' => $totalFiles]) }}
+                @endif
+                {{ $folderCount > 0 ? ', ' . trans_choice('filament-file-manager::file-manager.labels.folders_count', $folderCount, ['count' => $folderCount]) : '' }}
             </div>
         @else
             <div class="flex flex-col items-center justify-center gap-3 p-16 text-gray-400 dark:text-gray-500">

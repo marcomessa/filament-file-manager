@@ -5,17 +5,15 @@ namespace MmesDesign\FilamentFileManager\Livewire;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use MmesDesign\FilamentFileManager\Concerns\HandlesNavigation;
+use MmesDesign\FilamentFileManager\Concerns\HandlesPagination;
 use MmesDesign\FilamentFileManager\Concerns\HandlesSelection;
 use MmesDesign\FilamentFileManager\Enums\FileCategory;
 use MmesDesign\FilamentFileManager\Enums\SortDirection;
-use MmesDesign\FilamentFileManager\Enums\SortField;
 use MmesDesign\FilamentFileManager\Enums\ViewMode;
-use MmesDesign\FilamentFileManager\Services\FileManagerService;
-use MmesDesign\FilamentFileManager\Services\ThumbnailService;
-
 class FileManagerPicker extends Component
 {
     use HandlesNavigation;
+    use HandlesPagination;
     use HandlesSelection;
 
     public string $currentDisk = '';
@@ -60,7 +58,7 @@ class FileManagerPicker extends Component
 
     public function loadDirectory(): void
     {
-        // Triggers a re-render which will fetch fresh data
+        $this->resetPagination();
     }
 
     public function setViewMode(string $mode): void
@@ -76,16 +74,13 @@ class FileManagerPicker extends Component
             $this->sortField = $field;
             $this->sortDirection = SortDirection::Asc->value;
         }
+
+        $this->resetPagination();
     }
 
     public function getViewModeEnum(): ViewMode
     {
         return ViewMode::from($this->viewMode);
-    }
-
-    public function generateThumbnail(string $path): ?string
-    {
-        return app(ThumbnailService::class)->getThumbnailUrl($this->currentDisk, $path);
     }
 
     public function confirmSelection(): void
@@ -99,14 +94,11 @@ class FileManagerPicker extends Component
 
     public function render(): View
     {
-        $service = app(FileManagerService::class);
+        $paginated = $this->getPaginatedListing();
 
-        $listing = $service->listDirectory(
-            disk: $this->currentDisk,
-            path: $this->currentPath,
-            sortField: SortField::from($this->sortField),
-            sortDirection: SortDirection::from($this->sortDirection),
-        );
+        $listing = $paginated['listing'];
+        $totalFiles = $paginated['totalFiles'];
+        $hasMoreFiles = $paginated['hasMoreFiles'];
 
         if ($this->acceptedCategories !== []) {
             $accepted = array_map(
@@ -121,6 +113,8 @@ class FileManagerPicker extends Component
 
         return view('filament-file-manager::livewire.file-manager-picker', [
             'listing' => $listing,
+            'totalFiles' => $totalFiles,
+            'hasMoreFiles' => $hasMoreFiles,
         ]);
     }
 }

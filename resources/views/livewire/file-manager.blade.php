@@ -106,6 +106,17 @@
                                 @include('filament-file-manager::components.file-card', ['item' => $file, 'isFolder' => false])
                             @endforeach
                         </div>
+
+                        @if ($hasMoreFiles)
+                            <div
+                                x-intersect="$wire.loadMore()"
+                                wire:key="sentinel-{{ $filePage }}"
+                                class="flex items-center justify-center p-4"
+                            >
+                                <x-filament::loading-indicator class="size-5 text-gray-400 dark:text-gray-500" />
+                                <span class="ml-2 text-xs text-gray-400 dark:text-gray-500">{{ __('filament-file-manager::file-manager.labels.loading_more') }}</span>
+                            </div>
+                        @endif
                     </div>
                 @else
                     <div class="flex-1 overflow-y-auto">
@@ -154,6 +165,17 @@
                         @foreach ($listing->files as $file)
                             @include('filament-file-manager::components.file-row', ['item' => $file, 'isFolder' => false])
                         @endforeach
+
+                        @if ($hasMoreFiles)
+                            <div
+                                x-intersect="$wire.loadMore()"
+                                wire:key="sentinel-{{ $filePage }}"
+                                class="flex items-center justify-center p-4"
+                            >
+                                <x-filament::loading-indicator class="size-5 text-gray-400 dark:text-gray-500" />
+                                <span class="ml-2 text-xs text-gray-400 dark:text-gray-500">{{ __('filament-file-manager::file-manager.labels.loading_more') }}</span>
+                            </div>
+                        @endif
                     </div>
                     </div>
                 @endif
@@ -167,7 +189,12 @@
                     @if (count($selectedItems) > 0)
                         <span class="font-medium text-primary-600 dark:text-primary-400">{{ __('filament-file-manager::file-manager.labels.selected', ['count' => count($selectedItems)]) }}</span> &mdash;
                     @endif
-                    {{ trans_choice('filament-file-manager::file-manager.labels.files_count', $fileCount, ['count' => $fileCount]) }}{{ $folderCount > 0 ? ', ' . trans_choice('filament-file-manager::file-manager.labels.folders_count', $folderCount, ['count' => $folderCount]) : '' }}
+                    @if ($hasMoreFiles)
+                        {{ __('filament-file-manager::file-manager.labels.showing_of_total', ['shown' => $fileCount, 'total' => $totalFiles]) }}
+                    @else
+                        {{ trans_choice('filament-file-manager::file-manager.labels.files_count', $totalFiles, ['count' => $totalFiles]) }}
+                    @endif
+                    {{ $folderCount > 0 ? ', ' . trans_choice('filament-file-manager::file-manager.labels.folders_count', $folderCount, ['count' => $folderCount]) : '' }}
                 </div>
             @else
                 <div class="flex flex-1 flex-col items-center justify-center gap-3 p-16 text-gray-400 dark:text-gray-500">

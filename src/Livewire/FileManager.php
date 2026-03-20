@@ -12,18 +12,16 @@ use Livewire\Component;
 use MmesDesign\FilamentFileManager\Concerns\HandlesFileOperations;
 use MmesDesign\FilamentFileManager\Concerns\HandlesFolderTree;
 use MmesDesign\FilamentFileManager\Concerns\HandlesNavigation;
+use MmesDesign\FilamentFileManager\Concerns\HandlesPagination;
 use MmesDesign\FilamentFileManager\Concerns\HandlesSelection;
 use MmesDesign\FilamentFileManager\Enums\SortDirection;
-use MmesDesign\FilamentFileManager\Enums\SortField;
 use MmesDesign\FilamentFileManager\Enums\ViewMode;
 use MmesDesign\FilamentFileManager\FileManagerPlugin;
-use MmesDesign\FilamentFileManager\Services\FileManagerService;
-use MmesDesign\FilamentFileManager\Services\ThumbnailService;
-
 class FileManager extends Component implements HasActions, HasForms
 {
     use HandlesFolderTree;
     use HandlesNavigation;
+    use HandlesPagination;
     use HandlesSelection;
     use InteractsWithActions;
     use HandlesFileOperations, InteractsWithForms {
@@ -48,7 +46,7 @@ class FileManager extends Component implements HasActions, HasForms
 
     public function loadDirectory(): void
     {
-        // Triggers a re-render which will fetch fresh data
+        $this->resetPagination();
     }
 
     public function setViewMode(string $mode): void
@@ -64,16 +62,13 @@ class FileManager extends Component implements HasActions, HasForms
             $this->sortField = $field;
             $this->sortDirection = SortDirection::Asc->value;
         }
+
+        $this->resetPagination();
     }
 
     public function getViewModeEnum(): ViewMode
     {
         return ViewMode::from($this->viewMode);
-    }
-
-    public function generateThumbnail(string $path): ?string
-    {
-        return app(ThumbnailService::class)->getThumbnailUrl($this->currentDisk, $path);
     }
 
     public function refreshAction(): Action
@@ -87,17 +82,12 @@ class FileManager extends Component implements HasActions, HasForms
 
     public function render(): \Illuminate\Contracts\View\View
     {
-        $service = app(FileManagerService::class);
-
-        $listing = $service->listDirectory(
-            disk: $this->currentDisk,
-            path: $this->currentPath,
-            sortField: SortField::from($this->sortField),
-            sortDirection: SortDirection::from($this->sortDirection),
-        );
+        $paginated = $this->getPaginatedListing();
 
         return view('filament-file-manager::livewire.file-manager', [
-            'listing' => $listing,
+            'listing' => $paginated['listing'],
+            'totalFiles' => $paginated['totalFiles'],
+            'hasMoreFiles' => $paginated['hasMoreFiles'],
             'treeNodes' => $this->buildTreeNodes(),
         ]);
     }

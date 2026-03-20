@@ -175,7 +175,7 @@ class FileManagerPageTest extends TestCase
             ->assertSee('report.pdf');
     }
 
-    public function test_generate_thumbnail_creates_thumbnail_for_valid_image(): void
+    public function test_thumbnail_generated_server_side_for_valid_image(): void
     {
         $image = $this->createTestImage(400, 300);
         Storage::disk('public')->put('photo.jpg', $image);
@@ -183,21 +183,19 @@ class FileManagerPageTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->call('generateThumbnail', 'photo.jpg');
+        Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class);
 
         Storage::disk('public')->assertExists('.thumbnails/photo.jpg');
     }
 
-    public function test_generate_thumbnail_does_not_create_for_non_image(): void
+    public function test_thumbnail_not_generated_for_non_image(): void
     {
         Storage::disk('public')->put('document.pdf', 'pdf content');
 
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
-            ->call('generateThumbnail', 'document.pdf');
+        Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class);
 
         Storage::disk('public')->assertMissing('.thumbnails/document.pdf');
     }

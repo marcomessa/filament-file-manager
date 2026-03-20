@@ -99,7 +99,6 @@
             draggable="true"
             @dragstart="$event.dataTransfer.setData('text/plain', '{{ $item->path }}')"
         @endif
-        x-data="{ thumbnailUrl: @js($item->thumbnailUrl), loading: false }"
     >
         {{-- Checkbox --}}
         @if (! $pickMode || $multiple)
@@ -125,31 +124,6 @@
                     class="size-8 rounded object-cover"
                     loading="lazy"
                 />
-            @elseif ($item->isThumbnailable() && $item->url !== null)
-                <template x-if="thumbnailUrl">
-                    <img
-                        :src="thumbnailUrl"
-                        alt="{{ $item->name }}"
-                        class="size-8 rounded object-cover"
-                        loading="lazy"
-                    />
-                </template>
-                <template x-if="!thumbnailUrl && !loading">
-                    <div
-                        x-intersect.once="
-                            loading = true;
-                            $wire.generateThumbnail('{{ $item->path }}').then(url => {
-                                if (url) { thumbnailUrl = url; }
-                                loading = false;
-                            })
-                        "
-                    >
-                        <x-filament::icon :icon="$item->category->icon()" @class(['size-5', $item->category->color()]) />
-                    </div>
-                </template>
-                <template x-if="!thumbnailUrl && loading">
-                    <div class="size-5 animate-pulse rounded bg-gray-200 dark:bg-white/10"></div>
-                </template>
             @else
                 <x-filament::icon :icon="$item->category->icon()" @class(['size-5', $item->category->color()]) />
             @endif
