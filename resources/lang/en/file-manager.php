@@ -72,6 +72,8 @@ return [
         'file_selected' => '1 file selected',
         'no_file_selected' => 'No file selected',
         'root' => 'Root',
+        'showing_of_total' => ':shown of :total files',
+        'loading_more' => 'Loading more...',
     ],
 
     'modals' => [
@@ -89,6 +91,16 @@ return [
         'show_folders' => 'Show folders',
         'show_preview' => 'Show preview',
         'hide_preview' => 'Hide preview',
+    ],
+
+    'file_types' => [
+        'image' => 'Image',
+        'document' => 'Document',
+        'audio' => 'Audio',
+        'video' => 'Video',
+        'archive' => 'Archive',
+        'code' => 'Code',
+        'other' => 'Other',
     ],
 
     'misc' => [

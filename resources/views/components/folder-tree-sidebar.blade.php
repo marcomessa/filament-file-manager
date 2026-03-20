@@ -1,5 +1,5 @@
 <nav
-    class="flex h-full w-56 shrink-0 flex-col overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10"
+    class="flex w-56 shrink-0 flex-col overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10"
     aria-label="{{ __('filament-file-manager::file-manager.sidebar.folders') }}"
 >
     {{-- Header --}}

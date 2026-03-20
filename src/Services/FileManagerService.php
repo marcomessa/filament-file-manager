@@ -4,6 +4,7 @@ namespace MmesDesign\FilamentFileManager\Services;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use MmesDesign\FilamentFileManager\DTOs\DirectoryListing;
 use MmesDesign\FilamentFileManager\DTOs\FileItem;
@@ -26,7 +27,59 @@ class FileManagerService
         SortField $sortField = SortField::Name,
         SortDirection $sortDirection = SortDirection::Asc,
     ): DirectoryListing {
+        return $this->getCachedListing($disk, $path, $sortField, $sortDirection);
+    }
+
+    /**
+     * @return array{listing: DirectoryListing, totalFiles: int, hasMore: bool}
+     */
+    public function listDirectoryPaginated(
+        string $disk,
+        string $path = '',
+        SortField $sortField = SortField::Name,
+        SortDirection $sortDirection = SortDirection::Asc,
+        int $page = 1,
+        ?int $perPage = null,
+    ): array {
+        $perPage ??= (int) config('filament-file-manager.per_page', 50);
+        $listing = $this->listDirectory($disk, $path, $sortField, $sortDirection);
+
+        $totalFiles = count($listing->files);
+        $limit = $page * $perPage;
+        $paginatedFiles = array_slice($listing->files, 0, $limit);
+
+        return [
+            'listing' => new DirectoryListing(
+                path: $listing->path,
+                disk: $listing->disk,
+                folders: $listing->folders,
+                files: $paginatedFiles,
+            ),
+            'totalFiles' => $totalFiles,
+            'hasMore' => $limit < $totalFiles,
+        ];
+    }
+
+    protected function getCachedListing(
+        string $disk,
+        string $path,
+        SortField $sortField,
+        SortDirection $sortDirection,
+    ): DirectoryListing {
         $path = $path === '' ? '' : $this->pathSanitizer->sanitize($path);
+        $cacheKey = "fm:{$disk}:{$path}:{$sortField->value}:{$sortDirection->value}";
+
+        return Cache::remember($cacheKey, 60, function () use ($disk, $path, $sortField, $sortDirection): DirectoryListing {
+            return $this->buildDirectoryListing($disk, $path, $sortField, $sortDirection);
+        });
+    }
+
+    protected function buildDirectoryListing(
+        string $disk,
+        string $path,
+        SortField $sortField,
+        SortDirection $sortDirection,
+    ): DirectoryListing {
         $storage = $this->disk($disk);
 
         $rawData = $this->fetchDirectoryContents($storage, $path);
@@ -267,7 +320,7 @@ class FileManagerService
 
                 $url = $this->getUrl($disk, $file);
                 $thumbnailUrl = in_array($extension, FileItem::THUMBNAILABLE_EXTENSIONS, true)
-                    ? $this->thumbnailService->getExistingThumbnailUrl($disk, $file)
+                    ? $this->thumbnailService->getThumbnailUrl($disk, $file)
                     : null;
 
                 return new FileItem(
@@ -286,21 +339,33 @@ class FileManagerService
     }
 
     /**
+     * @template T of FileItem|FolderItem
+     *
+     * @param  array<int, T>  $items
+     * @param  \Closure(T, T, SortField): int  $comparator
+     * @return array<int, T>
+     */
+    protected function sortItems(array $items, SortField $field, SortDirection $direction, \Closure $comparator): array
+    {
+        usort($items, function ($a, $b) use ($field, $direction, $comparator): int {
+            $result = $comparator($a, $b, $field);
+
+            return $direction === SortDirection::Desc ? -$result : $result;
+        });
+
+        return $items;
+    }
+
+    /**
      * @param  array<int, FolderItem>  $folders
      * @return array<int, FolderItem>
      */
     protected function sortFolders(array $folders, SortField $field, SortDirection $direction): array
     {
-        usort($folders, function (FolderItem $a, FolderItem $b) use ($field, $direction): int {
-            $result = match ($field) {
-                SortField::Date => $a->lastModified <=> $b->lastModified,
-                default => strnatcasecmp($a->name, $b->name),
-            };
-
-            return $direction === SortDirection::Desc ? -$result : $result;
+        return $this->sortItems($folders, $field, $direction, fn (FolderItem $a, FolderItem $b, SortField $f): int => match ($f) {
+            SortField::Date => $a->lastModified <=> $b->lastModified,
+            default => strnatcasecmp($a->name, $b->name),
         });
-
-        return $folders;
     }
 
     /**
@@ -309,25 +374,26 @@ class FileManagerService
      */
     protected function sortFiles(array $files, SortField $field, SortDirection $direction): array
     {
-        usort($files, function (FileItem $a, FileItem $b) use ($field, $direction): int {
-            $result = match ($field) {
-                SortField::Name => strnatcasecmp($a->name, $b->name),
-                SortField::Size => $a->size <=> $b->size,
-                SortField::Date => $a->lastModified <=> $b->lastModified,
-                SortField::Type => strnatcasecmp($a->extension, $b->extension),
-            };
-
-            return $direction === SortDirection::Desc ? -$result : $result;
+        return $this->sortItems($files, $field, $direction, fn (FileItem $a, FileItem $b, SortField $f): int => match ($f) {
+            SortField::Name => strnatcasecmp($a->name, $b->name),
+            SortField::Size => $a->size <=> $b->size,
+            SortField::Date => $a->lastModified <=> $b->lastModified,
+            SortField::Type => strnatcasecmp($a->extension, $b->extension),
         });
-
-        return $files;
     }
 
     protected function invalidateCache(string $disk, string $directory): void
     {
-        // Remote disk caching available in the Pro package
+        foreach (SortField::cases() as $field) {
+            foreach (SortDirection::cases() as $direction) {
+                Cache::forget("fm:{$disk}:{$directory}:{$field->value}:{$direction->value}");
+            }
+        }
     }
 
+    /**
+     * @throws \RuntimeException
+     */
     protected function disk(string $disk): Filesystem
     {
         $this->ensureLocalDisk($disk);

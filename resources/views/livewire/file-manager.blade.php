@@ -46,7 +46,7 @@
         }
     }"
     @keydown.window="handleKeydown($event)"
-    class="flex h-full flex-col"
+    class="flex flex-col"
     data-fm-container
 >
     {{-- Disk switcher (visible only if Pro and multiple disks) --}}
@@ -66,9 +66,9 @@
     @endif
 
     {{-- Main layout --}}
-    <div class="flex min-h-0 flex-1 gap-4">
+    <div class="flex gap-4">
     {{-- Folder tree sidebar (left) --}}
-    <div class="hidden shrink-0 self-stretch lg:flex">
+    <div class="fm-sticky-sidebar hidden shrink-0 lg:flex">
         {{-- Collapsed --}}
         <button
             x-show="!folderSidebarOpen"
@@ -85,7 +85,7 @@
     </div>
 
     {{-- Main content --}}
-    <div class="flex min-h-0 min-w-0 flex-1 flex-col gap-4">
+    <div class="flex min-w-0 flex-1 flex-col gap-4">
         {{-- Toolbar --}}
         @include('filament-file-manager::components.toolbar')
 
@@ -93,7 +93,7 @@
         @include('filament-file-manager::components.breadcrumbs')
 
         {{-- Content --}}
-        <div class="flex min-h-0 flex-1 flex-col rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10" data-fm-content @click="previewFile = null">
+        <div class="flex flex-col rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10" data-fm-content @click="previewFile = null">
             @if ($listing && !$listing->isEmpty())
                 @if ($viewMode === 'grid')
                     <div class="flex-1 overflow-y-auto">
@@ -106,6 +106,17 @@
                                 @include('filament-file-manager::components.file-card', ['item' => $file, 'isFolder' => false])
                             @endforeach
                         </div>
+
+                        @if ($hasMoreFiles)
+                            <div
+                                x-intersect="$wire.loadMore()"
+                                wire:key="sentinel-{{ $filePage }}"
+                                class="flex items-center justify-center p-4"
+                            >
+                                <x-filament::loading-indicator class="size-5 text-gray-400 dark:text-gray-500" />
+                                <span class="ml-2 text-xs text-gray-400 dark:text-gray-500">{{ __('filament-file-manager::file-manager.labels.loading_more') }}</span>
+                            </div>
+                        @endif
                     </div>
                 @else
                     <div class="flex-1 overflow-y-auto">
@@ -154,6 +165,17 @@
                         @foreach ($listing->files as $file)
                             @include('filament-file-manager::components.file-row', ['item' => $file, 'isFolder' => false])
                         @endforeach
+
+                        @if ($hasMoreFiles)
+                            <div
+                                x-intersect="$wire.loadMore()"
+                                wire:key="sentinel-{{ $filePage }}"
+                                class="flex items-center justify-center p-4"
+                            >
+                                <x-filament::loading-indicator class="size-5 text-gray-400 dark:text-gray-500" />
+                                <span class="ml-2 text-xs text-gray-400 dark:text-gray-500">{{ __('filament-file-manager::file-manager.labels.loading_more') }}</span>
+                            </div>
+                        @endif
                     </div>
                     </div>
                 @endif
@@ -167,7 +189,12 @@
                     @if (count($selectedItems) > 0)
                         <span class="font-medium text-primary-600 dark:text-primary-400">{{ __('filament-file-manager::file-manager.labels.selected', ['count' => count($selectedItems)]) }}</span> &mdash;
                     @endif
-                    {{ trans_choice('filament-file-manager::file-manager.labels.files_count', $fileCount, ['count' => $fileCount]) }}{{ $folderCount > 0 ? ', ' . trans_choice('filament-file-manager::file-manager.labels.folders_count', $folderCount, ['count' => $folderCount]) : '' }}
+                    @if ($hasMoreFiles)
+                        {{ __('filament-file-manager::file-manager.labels.showing_of_total', ['shown' => $fileCount, 'total' => $totalFiles]) }}
+                    @else
+                        {{ trans_choice('filament-file-manager::file-manager.labels.files_count', $totalFiles, ['count' => $totalFiles]) }}
+                    @endif
+                    {{ $folderCount > 0 ? ', ' . trans_choice('filament-file-manager::file-manager.labels.folders_count', $folderCount, ['count' => $folderCount]) : '' }}
                 </div>
             @else
                 <div class="flex flex-1 flex-col items-center justify-center gap-3 p-16 text-gray-400 dark:text-gray-500">
@@ -183,9 +210,9 @@
     </div>
 
     {{-- Preview sidebar --}}
-    <div class="hidden shrink-0 self-stretch lg:flex">
+    <div class="fm-sticky-sidebar hidden shrink-0 lg:flex">
         {{-- Expanded --}}
-        <div x-show="previewSidebarOpen" x-cloak class="h-full overflow-hidden rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10">
+        <div x-show="previewSidebarOpen" x-cloak class="overflow-hidden rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10">
             @include('filament-file-manager::components.file-preview-sidebar')
         </div>
         {{-- Collapsed --}}

@@ -12,12 +12,11 @@ class PathSanitizer
     public function sanitize(string $path): string
     {
         $path = str_replace("\0", '', $path);
+        $path = str_replace('\\', '/', $path);
 
-        if (str_starts_with($path, '/') || str_starts_with($path, '\\')) {
+        if (str_starts_with($path, '/') || preg_match('/^[a-zA-Z]:/', $path)) {
             throw new \InvalidArgumentException('Absolute paths are not allowed.');
         }
-
-        $path = str_replace('\\', '/', $path);
 
         $segments = explode('/', $path);
 

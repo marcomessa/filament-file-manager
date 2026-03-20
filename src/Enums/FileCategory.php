@@ -14,15 +14,7 @@ enum FileCategory: string
 
     public function label(): string
     {
-        return match ($this) {
-            self::Image => 'Image',
-            self::Document => 'Document',
-            self::Audio => 'Audio',
-            self::Video => 'Video',
-            self::Archive => 'Archive',
-            self::Code => 'Code',
-            self::Other => 'Other',
-        };
+        return __("filament-file-manager::file-manager.file_types.{$this->value}");
     }
 
     public function icon(): string

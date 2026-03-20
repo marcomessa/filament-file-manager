@@ -2,21 +2,38 @@
 
 namespace MmesDesign\FilamentFileManager\Livewire;
 
+use Filament\Actions\Action;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
+use MmesDesign\FilamentFileManager\Concerns\HandlesFileOperations;
 use MmesDesign\FilamentFileManager\Concerns\HandlesNavigation;
+use MmesDesign\FilamentFileManager\Concerns\HandlesPagination;
 use MmesDesign\FilamentFileManager\Concerns\HandlesSelection;
+use MmesDesign\FilamentFileManager\Concerns\HandlesUpload;
 use MmesDesign\FilamentFileManager\Enums\FileCategory;
 use MmesDesign\FilamentFileManager\Enums\SortDirection;
-use MmesDesign\FilamentFileManager\Enums\SortField;
 use MmesDesign\FilamentFileManager\Enums\ViewMode;
 use MmesDesign\FilamentFileManager\Services\FileManagerService;
-use MmesDesign\FilamentFileManager\Services\ThumbnailService;
+use MmesDesign\FilamentFileManager\Services\FileTypeResolver;
 
-class FileManagerPicker extends Component
+class FileManagerPicker extends Component implements HasActions, HasForms
 {
+    use HandlesFileOperations;
     use HandlesNavigation;
+    use HandlesPagination;
     use HandlesSelection;
+    use InteractsWithActions;
+    use HandlesUpload, InteractsWithForms {
+        HandlesUpload::_uploadErrored insteadof InteractsWithForms;
+    }
+
+    protected FileManagerService $fileManagerService;
+
+    protected FileTypeResolver $fileTypeResolver;
 
     public string $currentDisk = '';
 
@@ -32,6 +49,12 @@ class FileManagerPicker extends Component
 
     /** @var array<int, string> */
     public array $acceptedCategories = [];
+
+    public function boot(FileManagerService $fileManagerService, FileTypeResolver $fileTypeResolver): void
+    {
+        $this->fileManagerService = $fileManagerService;
+        $this->fileTypeResolver = $fileTypeResolver;
+    }
 
     /**
      * @param  string|array<int, string>|null  $selectedPaths
@@ -60,7 +83,7 @@ class FileManagerPicker extends Component
 
     public function loadDirectory(): void
     {
-        // Triggers a re-render which will fetch fresh data
+        $this->resetPagination();
     }
 
     public function setViewMode(string $mode): void
@@ -76,6 +99,8 @@ class FileManagerPicker extends Component
             $this->sortField = $field;
             $this->sortDirection = SortDirection::Asc->value;
         }
+
+        $this->resetPagination();
     }
 
     public function getViewModeEnum(): ViewMode
@@ -83,9 +108,13 @@ class FileManagerPicker extends Component
         return ViewMode::from($this->viewMode);
     }
 
-    public function generateThumbnail(string $path): ?string
+    public function refreshAction(): Action
     {
-        return app(ThumbnailService::class)->getThumbnailUrl($this->currentDisk, $path);
+        return Action::make('refresh')
+            ->label(__('filament-file-manager::file-manager.toolbar.refresh'))
+            ->icon('heroicon-o-arrow-path')
+            ->color('gray')
+            ->action(fn () => null);
     }
 
     public function confirmSelection(): void
@@ -99,14 +128,11 @@ class FileManagerPicker extends Component
 
     public function render(): View
     {
-        $service = app(FileManagerService::class);
+        $paginated = $this->getPaginatedListing();
 
-        $listing = $service->listDirectory(
-            disk: $this->currentDisk,
-            path: $this->currentPath,
-            sortField: SortField::from($this->sortField),
-            sortDirection: SortDirection::from($this->sortDirection),
-        );
+        $listing = $paginated['listing'];
+        $totalFiles = $paginated['totalFiles'];
+        $hasMoreFiles = $paginated['hasMoreFiles'];
 
         if ($this->acceptedCategories !== []) {
             $accepted = array_map(
@@ -121,6 +147,8 @@ class FileManagerPicker extends Component
 
         return view('filament-file-manager::livewire.file-manager-picker', [
             'listing' => $listing,
+            'totalFiles' => $totalFiles,
+            'hasMoreFiles' => $hasMoreFiles,
         ]);
     }
 }

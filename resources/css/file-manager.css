@@ -35,14 +35,12 @@
         color: white;
     }
 
-    .fi-page.fi-height-full .fi-page-main {
-        flex: 1 1 0%;
-        min-height: 0;
-        height: auto;
+    .fm-sticky-sidebar {
+        position: sticky;
+        top: 5rem;
+        max-height: calc(100dvh - 5rem);
+        align-self: flex-start;
     }
 
-    .fi-page.fi-height-full .fi-page-content {
-        min-height: 0;
-    }
 
 }
