@@ -1,8 +1,8 @@
-<div class="flex h-full w-64 shrink-0 bg-white dark:bg-gray-900" x-data="{ showInfo: true }">
+<div class="flex w-64 shrink-0 bg-white dark:bg-gray-900" x-data="{ showInfo: true }">
     {{-- Empty state --}}
     <div
         x-show="!previewFile"
-        class="flex h-full w-full flex-col bg-white dark:bg-gray-900"
+        class="flex w-full flex-col bg-white dark:bg-gray-900"
     >
         <div class="flex justify-end border-b border-gray-200 px-3 py-2.5 dark:border-white/10">
             <button
@@ -23,7 +23,7 @@
     <div
         x-show="previewFile"
         x-cloak
-        class="flex h-full w-full flex-col border-l border-gray-200 bg-white dark:border-white/10 dark:bg-gray-900"
+        class="flex w-full flex-col border-l border-gray-200 bg-white dark:border-white/10 dark:bg-gray-900"
     >
         {{-- Header --}}
         <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-white/10">
