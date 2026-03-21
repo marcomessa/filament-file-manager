@@ -96,6 +96,17 @@ class FileTypeResolver
         return $this->resolve($filename)->color();
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public function extensionsForCategory(FileCategory $category): array
+    {
+        return array_keys(array_filter(
+            self::$extensionMap,
+            fn (FileCategory $cat): bool => $cat === $category,
+        ));
+    }
+
     public function mimeType(string $extension): string
     {
         $extension = strtolower($extension);
