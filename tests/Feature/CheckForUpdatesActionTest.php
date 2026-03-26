@@ -7,17 +7,20 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
 use MmesDesign\FilamentFileManager\Filament\Pages\FileManagerPage;
+use MmesDesign\FilamentFileManager\Tests\Feature\Concerns\ResetsPermissions;
 use Tests\TestCase;
 
 class CheckForUpdatesActionTest extends TestCase
 {
     use RefreshDatabase;
+    use ResetsPermissions;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         config(['app.env' => 'local']);
+        $this->resetPermissions();
     }
 
     public function test_check_for_updates_action_exists(): void

@@ -29,7 +29,7 @@
 
             // Delete/Backspace: delete selected
             if (e.key === 'Delete' || e.key === 'Backspace') {
-                if ($wire.selectedItems.length > 0 && !e.target.closest('input, textarea, [contenteditable]')) {
+                if (@js($permissions['canDelete']) && $wire.selectedItems.length > 0 && !e.target.closest('input, textarea, [contenteditable]')) {
                     e.preventDefault();
                     $wire.mountAction('deleteSelected');
                     return;
@@ -38,7 +38,7 @@
 
             // F2: rename single selected item
             if (e.key === 'F2') {
-                if ($wire.selectedItems.length === 1) {
+                if (@js($permissions['canRename']) && $wire.selectedItems.length === 1) {
                     e.preventDefault();
                     $wire.mountAction('rename', { path: $wire.selectedItems[0] });
                 }
@@ -87,7 +87,7 @@
     {{-- Main content --}}
     <div class="flex min-w-0 flex-1 flex-col gap-4">
         {{-- Toolbar --}}
-        @include('filament-file-manager::components.toolbar')
+        @include('filament-file-manager::components.toolbar', ['permissions' => $permissions])
 
         {{-- Breadcrumbs --}}
         @include('filament-file-manager::components.breadcrumbs')
@@ -99,11 +99,11 @@
                     <div class="flex-1 overflow-y-auto">
                         <div class="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                             @foreach ($listing->folders as $folder)
-                                @include('filament-file-manager::components.file-card', ['item' => $folder, 'isFolder' => true])
+                                @include('filament-file-manager::components.file-card', ['item' => $folder, 'isFolder' => true, 'permissions' => $permissions])
                             @endforeach
 
                             @foreach ($listing->files as $file)
-                                @include('filament-file-manager::components.file-card', ['item' => $file, 'isFolder' => false])
+                                @include('filament-file-manager::components.file-card', ['item' => $file, 'isFolder' => false, 'permissions' => $permissions])
                             @endforeach
                         </div>
 
@@ -159,11 +159,11 @@
                         </div>
 
                         @foreach ($listing->folders as $folder)
-                            @include('filament-file-manager::components.file-row', ['item' => $folder, 'isFolder' => true])
+                            @include('filament-file-manager::components.file-row', ['item' => $folder, 'isFolder' => true, 'permissions' => $permissions])
                         @endforeach
 
                         @foreach ($listing->files as $file)
-                            @include('filament-file-manager::components.file-row', ['item' => $file, 'isFolder' => false])
+                            @include('filament-file-manager::components.file-row', ['item' => $file, 'isFolder' => false, 'permissions' => $permissions])
                         @endforeach
 
                         @if ($hasMoreFiles)
@@ -206,14 +206,14 @@
         </div>
 
         {{-- Context menu --}}
-        @include('filament-file-manager::components.context-menu')
+        @include('filament-file-manager::components.context-menu', ['permissions' => $permissions])
     </div>
 
     {{-- Preview sidebar --}}
     <div class="fm-sticky-sidebar hidden shrink-0 lg:flex">
         {{-- Expanded --}}
         <div x-show="previewSidebarOpen" x-cloak class="overflow-hidden rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10">
-            @include('filament-file-manager::components.file-preview-sidebar')
+            @include('filament-file-manager::components.file-preview-sidebar', ['permissions' => $permissions])
         </div>
         {{-- Collapsed --}}
         <button

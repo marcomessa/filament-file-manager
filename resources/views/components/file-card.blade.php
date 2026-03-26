@@ -1,8 +1,10 @@
 @php
     $pickMode = $pickMode ?? false;
     $multiple = $multiple ?? true;
+    $permissions = $permissions ?? [];
     $isSelected = in_array($item->path, $selectedItems, true);
     $hasSelection = count($selectedItems) > 0;
+    $canMove = ! $pickMode && ($permissions['canMove'] ?? true);
 @endphp
 
 @if ($isFolder)
@@ -17,7 +19,7 @@
         @endif
         x-data="{
             showActions: false,
-            @if (! $pickMode)
+            @if ($canMove)
                 dragOver: false,
             @endif
         }"
@@ -25,6 +27,8 @@
             @mouseenter="showActions = true"
             @mouseleave="showActions = false"
             @contextmenu.prevent="$el.closest('[x-ref=contextMenu]').__x.$data.show($event, @js($item->path), 'folder')"
+        @endif
+        @if ($canMove)
             draggable="true"
             @dragstart="$event.dataTransfer.setData('text/plain', @js($item->path))"
             @dragover.prevent="dragOver = true"
@@ -77,7 +81,7 @@
                 x-transition.opacity.duration.150ms
                 class="absolute top-1.5 right-1.5 flex items-center gap-0.5 rounded-lg bg-white/90 p-0.5 shadow-sm ring-1 ring-gray-950/5 backdrop-blur-sm dark:bg-gray-800/90 dark:ring-white/10"
             >
-                <x-filament-file-manager::file-actions :item="$item" :is-folder="true" size="sm" />
+                <x-filament-file-manager::file-actions :item="$item" :is-folder="true" size="sm" :permissions="$permissions" />
             </div>
         @endif
     </div>
@@ -103,6 +107,8 @@
             @mouseenter="showActions = true"
             @mouseleave="showActions = false"
             @contextmenu.prevent="$el.closest('[x-ref=contextMenu]').__x.$data.show($event, @js($item->path), 'file')"
+        @endif
+        @if ($canMove)
             draggable="true"
             @dragstart="$event.dataTransfer.setData('text/plain', @js($item->path))"
         @endif
@@ -159,7 +165,7 @@
                 x-transition.opacity.duration.150ms
                 class="absolute top-1.5 right-1.5 flex items-center gap-0.5 rounded-lg bg-white/90 p-0.5 shadow-sm ring-1 ring-gray-950/5 backdrop-blur-sm dark:bg-gray-800/90 dark:ring-white/10"
             >
-                <x-filament-file-manager::file-actions :item="$item" size="sm" />
+                <x-filament-file-manager::file-actions :item="$item" size="sm" :permissions="$permissions" />
             </div>
         @endif
     </div>

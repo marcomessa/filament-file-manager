@@ -6,11 +6,13 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
+use MmesDesign\FilamentFileManager\Tests\Feature\Concerns\ResetsPermissions;
 use Tests\TestCase;
 
 class SelectionTest extends TestCase
 {
     use RefreshDatabase;
+    use ResetsPermissions;
 
     protected function setUp(): void
     {
@@ -18,6 +20,7 @@ class SelectionTest extends TestCase
 
         config(['app.env' => 'local']);
         Storage::fake('public');
+        $this->resetPermissions();
     }
 
     public function test_toggle_selection_adds_item(): void

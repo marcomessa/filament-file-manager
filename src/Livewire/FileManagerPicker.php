@@ -17,6 +17,7 @@ use MmesDesign\FilamentFileManager\Concerns\HandlesUpload;
 use MmesDesign\FilamentFileManager\Enums\FileCategory;
 use MmesDesign\FilamentFileManager\Enums\SortDirection;
 use MmesDesign\FilamentFileManager\Enums\ViewMode;
+use MmesDesign\FilamentFileManager\FileManagerPlugin;
 use MmesDesign\FilamentFileManager\Services\FileManagerService;
 use MmesDesign\FilamentFileManager\Services\FileTypeResolver;
 
@@ -149,6 +150,7 @@ class FileManagerPicker extends Component implements HasActions, HasForms
             'listing' => $listing,
             'totalFiles' => $totalFiles,
             'hasMoreFiles' => $hasMoreFiles,
+            'permissions' => FileManagerPlugin::get()->getPermissions(),
         ]);
     }
 }

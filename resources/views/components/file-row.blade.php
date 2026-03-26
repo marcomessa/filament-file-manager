@@ -1,7 +1,9 @@
 @php
     $pickMode = $pickMode ?? false;
     $multiple = $multiple ?? true;
+    $permissions = $permissions ?? [];
     $isSelected = in_array($item->path, $selectedItems, true);
+    $canMove = ! $pickMode && ($permissions['canMove'] ?? true);
 @endphp
 
 @if ($isFolder)
@@ -13,8 +15,10 @@
         ])
         @if (! $pickMode)
             data-context-target
-            x-data="{ dragOver: false }"
             @contextmenu.prevent="$el.closest('[x-ref=contextMenu]').__x.$data.show($event, @js($item->path), 'folder')"
+        @endif
+        @if ($canMove)
+            x-data="{ dragOver: false }"
             draggable="true"
             @dragstart="$event.dataTransfer.setData('text/plain', @js($item->path))"
             @dragover.prevent="dragOver = true"
@@ -60,7 +64,7 @@
                 {{ $item->formattedDate() }}
             </span>
             <div class="flex w-24 items-center justify-end gap-1 opacity-0 transition group-hover:opacity-100">
-                <x-filament-file-manager::file-actions :item="$item" :is-folder="true" size="md" />
+                <x-filament-file-manager::file-actions :item="$item" :is-folder="true" size="md" :permissions="$permissions" />
             </div>
         @endif
     </div>
@@ -81,6 +85,8 @@
             data-context-target
             @click.stop
             @contextmenu.prevent="$el.closest('[x-ref=contextMenu]').__x.$data.show($event, @js($item->path), 'file')"
+        @endif
+        @if ($canMove)
             draggable="true"
             @dragstart="$event.dataTransfer.setData('text/plain', @js($item->path))"
         @endif
@@ -131,7 +137,7 @@
                 {{ $item->formattedDate() }}
             </span>
             <div class="flex w-24 items-center justify-end gap-1 opacity-0 transition group-hover:opacity-100">
-                <x-filament-file-manager::file-actions :item="$item" size="md" />
+                <x-filament-file-manager::file-actions :item="$item" size="md" :permissions="$permissions" />
             </div>
         @endif
     </div>

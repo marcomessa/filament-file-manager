@@ -62,28 +62,34 @@
                     <x-filament::icon icon="heroicon-m-eye" class="size-4 text-gray-400" />
                     {{ __('filament-file-manager::file-manager.actions.preview') }}
                 </button>
-                <button
-                    @click="$wire.downloadFile(contextPath)"
-                    class="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
-                >
-                    <x-filament::icon icon="heroicon-m-arrow-down-tray" class="size-4 text-gray-400" />
-                    {{ __('filament-file-manager::file-manager.actions.download') }}
-                </button>
+                @if ($permissions['canDownload'] ?? true)
+                    <button
+                        @click="$wire.downloadFile(contextPath)"
+                        class="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
+                    >
+                        <x-filament::icon icon="heroicon-m-arrow-down-tray" class="size-4 text-gray-400" />
+                        {{ __('filament-file-manager::file-manager.actions.download') }}
+                    </button>
+                @endif
                 <div class="my-1 border-t border-gray-100 dark:border-white/5"></div>
-                <button
-                    @click="$wire.mountAction('rename', { path: contextPath })"
-                    class="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
-                >
-                    <x-filament::icon icon="heroicon-m-pencil" class="size-4 text-gray-400" />
-                    {{ __('filament-file-manager::file-manager.actions.rename') }}
-                </button>
-                <button
-                    @click="$wire.mountAction('deleteItem', { path: contextPath })"
-                    class="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
-                >
-                    <x-filament::icon icon="heroicon-m-trash" class="size-4" />
-                    {{ __('filament-file-manager::file-manager.actions.delete') }}
-                </button>
+                @if ($permissions['canRename'] ?? true)
+                    <button
+                        @click="$wire.mountAction('rename', { path: contextPath })"
+                        class="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
+                    >
+                        <x-filament::icon icon="heroicon-m-pencil" class="size-4 text-gray-400" />
+                        {{ __('filament-file-manager::file-manager.actions.rename') }}
+                    </button>
+                @endif
+                @if ($permissions['canDelete'] ?? true)
+                    <button
+                        @click="$wire.mountAction('deleteItem', { path: contextPath })"
+                        class="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+                    >
+                        <x-filament::icon icon="heroicon-m-trash" class="size-4" />
+                        {{ __('filament-file-manager::file-manager.actions.delete') }}
+                    </button>
+                @endif
             </div>
         </template>
 
@@ -98,40 +104,48 @@
                     {{ __('filament-file-manager::file-manager.actions.open') }}
                 </button>
                 <div class="my-1 border-t border-gray-100 dark:border-white/5"></div>
-                <button
-                    @click="$wire.mountAction('rename', { path: contextPath })"
-                    class="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
-                >
-                    <x-filament::icon icon="heroicon-m-pencil" class="size-4 text-gray-400" />
-                    {{ __('filament-file-manager::file-manager.actions.rename') }}
-                </button>
-                <button
-                    @click="$wire.mountAction('deleteItem', { path: contextPath })"
-                    class="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
-                >
-                    <x-filament::icon icon="heroicon-m-trash" class="size-4" />
-                    {{ __('filament-file-manager::file-manager.actions.delete') }}
-                </button>
+                @if ($permissions['canRename'] ?? true)
+                    <button
+                        @click="$wire.mountAction('rename', { path: contextPath })"
+                        class="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
+                    >
+                        <x-filament::icon icon="heroicon-m-pencil" class="size-4 text-gray-400" />
+                        {{ __('filament-file-manager::file-manager.actions.rename') }}
+                    </button>
+                @endif
+                @if ($permissions['canDelete'] ?? true)
+                    <button
+                        @click="$wire.mountAction('deleteItem', { path: contextPath })"
+                        class="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+                    >
+                        <x-filament::icon icon="heroicon-m-trash" class="size-4" />
+                        {{ __('filament-file-manager::file-manager.actions.delete') }}
+                    </button>
+                @endif
             </div>
         </template>
 
         {{-- Background actions --}}
         <template x-if="contextType === 'background'">
             <div>
-                <button
-                    @click="$wire.mountAction('uploadFiles')"
-                    class="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
-                >
-                    <x-filament::icon icon="heroicon-m-arrow-up-tray" class="size-4 text-gray-400" />
-                    {{ __('filament-file-manager::file-manager.actions.upload_files') }}
-                </button>
-                <button
-                    @click="$wire.mountAction('createFolder')"
-                    class="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
-                >
-                    <x-filament::icon icon="heroicon-m-folder-plus" class="size-4 text-gray-400" />
-                    {{ __('filament-file-manager::file-manager.actions.new_folder') }}
-                </button>
+                @if ($permissions['canUpload'] ?? true)
+                    <button
+                        @click="$wire.mountAction('uploadFiles')"
+                        class="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
+                    >
+                        <x-filament::icon icon="heroicon-m-arrow-up-tray" class="size-4 text-gray-400" />
+                        {{ __('filament-file-manager::file-manager.actions.upload_files') }}
+                    </button>
+                @endif
+                @if ($permissions['canCreateFolder'] ?? true)
+                    <button
+                        @click="$wire.mountAction('createFolder')"
+                        class="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
+                    >
+                        <x-filament::icon icon="heroicon-m-folder-plus" class="size-4 text-gray-400" />
+                        {{ __('filament-file-manager::file-manager.actions.new_folder') }}
+                    </button>
+                @endif
             </div>
         </template>
     </div>

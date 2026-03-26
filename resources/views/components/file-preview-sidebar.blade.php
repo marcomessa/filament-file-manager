@@ -163,30 +163,36 @@
             >
                 <x-filament::icon icon="heroicon-m-arrows-pointing-out" class="size-4" />
             </button>
-            <button
-                @click="$wire.downloadFile(previewFile.path)"
-                type="button"
-                class="flex size-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
-                title="{{ __('filament-file-manager::file-manager.actions.download') }}"
-            >
-                <x-filament::icon icon="heroicon-m-arrow-down-tray" class="size-4" />
-            </button>
-            <button
-                @click="$wire.mountAction('rename', { path: previewFile.path })"
-                type="button"
-                class="flex size-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
-                title="{{ __('filament-file-manager::file-manager.actions.rename') }}"
-            >
-                <x-filament::icon icon="heroicon-m-pencil" class="size-4" />
-            </button>
-            <button
-                @click="$wire.mountAction('deleteItem', { path: previewFile.path })"
-                type="button"
-                class="flex size-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
-                title="{{ __('filament-file-manager::file-manager.actions.delete') }}"
-            >
-                <x-filament::icon icon="heroicon-m-trash" class="size-4" />
-            </button>
+            @if ($permissions['canDownload'] ?? true)
+                <button
+                    @click="$wire.downloadFile(previewFile.path)"
+                    type="button"
+                    class="flex size-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                    title="{{ __('filament-file-manager::file-manager.actions.download') }}"
+                >
+                    <x-filament::icon icon="heroicon-m-arrow-down-tray" class="size-4" />
+                </button>
+            @endif
+            @if ($permissions['canRename'] ?? true)
+                <button
+                    @click="$wire.mountAction('rename', { path: previewFile.path })"
+                    type="button"
+                    class="flex size-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                    title="{{ __('filament-file-manager::file-manager.actions.rename') }}"
+                >
+                    <x-filament::icon icon="heroicon-m-pencil" class="size-4" />
+                </button>
+            @endif
+            @if ($permissions['canDelete'] ?? true)
+                <button
+                    @click="$wire.mountAction('deleteItem', { path: previewFile.path })"
+                    type="button"
+                    class="flex size-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
+                    title="{{ __('filament-file-manager::file-manager.actions.delete') }}"
+                >
+                    <x-filament::icon icon="heroicon-m-trash" class="size-4" />
+                </button>
+            @endif
         </div>
     </div>
 </div>

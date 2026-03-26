@@ -41,6 +41,11 @@ class FileManagerPage extends Page
         return FileManagerPlugin::get()->getNavigationSort();
     }
 
+    public static function canAccess(): bool
+    {
+        return FileManagerPlugin::get()->hasAccess();
+    }
+
     /**
      * @return array<Action>
      */
