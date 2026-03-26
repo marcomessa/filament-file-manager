@@ -2,6 +2,11 @@
 
 return [
 
+    'page' => [
+        'title' => 'Gestione File',
+        'navigation_label' => 'Gestione File',
+    ],
+
     'toolbar' => [
         'upload' => 'Carica',
         'new_folder' => 'Nuova cartella',

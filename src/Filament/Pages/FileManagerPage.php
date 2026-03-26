@@ -6,6 +6,7 @@ use Composer\InstalledVersions;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Http;
 use MmesDesign\FilamentFileManager\FileManagerPlugin;
 
@@ -13,11 +14,17 @@ class FileManagerPage extends Page
 {
     protected string $view = 'filament-file-manager::pages.file-manager-page';
 
-    protected static ?string $title = 'File Manager';
-
-    protected static ?string $navigationLabel = 'File Manager';
-
     protected static ?string $slug = 'file-manager';
+
+    public function getTitle(): string|Htmlable
+    {
+        return __('filament-file-manager::file-manager.page.title');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament-file-manager::file-manager.page.navigation_label');
+    }
 
     public static function getNavigationIcon(): string|\BackedEnum|null
     {
