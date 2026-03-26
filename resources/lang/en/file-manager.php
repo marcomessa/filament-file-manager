@@ -2,6 +2,11 @@
 
 return [
 
+    'page' => [
+        'title' => 'File Manager',
+        'navigation_label' => 'File Manager',
+    ],
+
     'toolbar' => [
         'upload' => 'Upload',
         'new_folder' => 'New folder',
