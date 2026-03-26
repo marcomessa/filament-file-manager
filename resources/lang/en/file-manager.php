@@ -60,6 +60,7 @@ return [
         'folder_already_exists' => "Folder ':name' already exists.",
         'name_already_exists' => "':name' already exists.",
         'extension_changed' => 'Changing the file extension may make the file unusable.',
+        'permission_denied' => 'You do not have permission to perform this action.',
     ],
 
     'labels' => [

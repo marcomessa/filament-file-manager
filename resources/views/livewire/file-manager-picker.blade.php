@@ -3,8 +3,12 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
         {{-- Left: actions --}}
         <div class="flex items-center gap-1">
-            {{ $this->uploadFilesAction }}
-            {{ $this->createFolderAction }}
+            @if ($permissions['canUpload'] ?? true)
+                {{ $this->uploadFilesAction }}
+            @endif
+            @if ($permissions['canCreateFolder'] ?? true)
+                {{ $this->createFolderAction }}
+            @endif
             {{ $this->refreshAction }}
         </div>
 
@@ -73,11 +77,11 @@
             @if ($viewMode === 'grid')
                 <div class="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     @foreach ($listing->folders as $folder)
-                        @include('filament-file-manager::components.file-card', ['item' => $folder, 'isFolder' => true, 'pickMode' => true, 'multiple' => $multiple])
+                        @include('filament-file-manager::components.file-card', ['item' => $folder, 'isFolder' => true, 'pickMode' => true, 'multiple' => $multiple, 'permissions' => $permissions])
                     @endforeach
 
                     @foreach ($listing->files as $file)
-                        @include('filament-file-manager::components.file-card', ['item' => $file, 'isFolder' => false, 'pickMode' => true, 'multiple' => $multiple])
+                        @include('filament-file-manager::components.file-card', ['item' => $file, 'isFolder' => false, 'pickMode' => true, 'multiple' => $multiple, 'permissions' => $permissions])
                     @endforeach
                 </div>
 
@@ -115,11 +119,11 @@
                     </div>
 
                     @foreach ($listing->folders as $folder)
-                        @include('filament-file-manager::components.file-row', ['item' => $folder, 'isFolder' => true, 'pickMode' => true, 'multiple' => $multiple])
+                        @include('filament-file-manager::components.file-row', ['item' => $folder, 'isFolder' => true, 'pickMode' => true, 'multiple' => $multiple, 'permissions' => $permissions])
                     @endforeach
 
                     @foreach ($listing->files as $file)
-                        @include('filament-file-manager::components.file-row', ['item' => $file, 'isFolder' => false, 'pickMode' => true, 'multiple' => $multiple])
+                        @include('filament-file-manager::components.file-row', ['item' => $file, 'isFolder' => false, 'pickMode' => true, 'multiple' => $multiple, 'permissions' => $permissions])
                     @endforeach
 
                     @if ($hasMoreFiles)

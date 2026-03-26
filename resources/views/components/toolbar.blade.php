@@ -6,8 +6,12 @@
                 {{ trans_choice('filament-file-manager::file-manager.toolbar.selected_count', count($selectedItems), ['count' => count($selectedItems)]) }}
             </span>
 
-            {{ $this->deleteSelectedAction }}
-            {{ $this->moveSelectedAction }}
+            @if ($permissions['canDelete'] ?? true)
+                {{ $this->deleteSelectedAction }}
+            @endif
+            @if ($permissions['canMove'] ?? true)
+                {{ $this->moveSelectedAction }}
+            @endif
         </div>
 
         <button
@@ -24,10 +28,14 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2">
             {{-- Upload --}}
-            {{ $this->uploadFilesAction }}
+            @if ($permissions['canUpload'] ?? true)
+                {{ $this->uploadFilesAction }}
+            @endif
 
             {{-- New folder --}}
-            {{ $this->createFolderAction }}
+            @if ($permissions['canCreateFolder'] ?? true)
+                {{ $this->createFolderAction }}
+            @endif
 
             {{-- Refresh --}}
             {{ $this->refreshAction }}

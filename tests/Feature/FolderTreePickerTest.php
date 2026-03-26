@@ -7,11 +7,13 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use MmesDesign\FilamentFileManager\Forms\Components\FolderTreePicker;
+use MmesDesign\FilamentFileManager\Tests\Feature\Concerns\ResetsPermissions;
 use Tests\TestCase;
 
 class FolderTreePickerTest extends TestCase
 {
     use RefreshDatabase;
+    use ResetsPermissions;
 
     protected function setUp(): void
     {
@@ -19,6 +21,7 @@ class FolderTreePickerTest extends TestCase
 
         config(['app.env' => 'local']);
         Storage::fake('public');
+        $this->resetPermissions();
     }
 
     public function test_folder_tree_picker_returns_root_subfolders(): void

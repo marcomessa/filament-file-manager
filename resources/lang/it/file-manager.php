@@ -60,6 +60,7 @@ return [
         'folder_already_exists' => "La cartella ':name' esiste già.",
         'name_already_exists' => "':name' esiste già.",
         'extension_changed' => "Cambiare l'estensione del file potrebbe renderlo inutilizzabile.",
+        'permission_denied' => 'Non hai i permessi per eseguire questa azione.',
     ],
 
     'labels' => [

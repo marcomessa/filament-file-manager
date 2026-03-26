@@ -164,6 +164,38 @@ FilePicker::make('private_doc')
     ->disk('local')
 ```
 
+## Permissions
+
+Control who can perform specific actions in the file manager. Permissions are configured on the plugin instance and accept a `bool` or a `Closure`:
+
+```php
+FileManagerPlugin::make()
+    ->canAccess(fn () => auth()->user()->is_admin)
+    ->canUpload(fn () => auth()->user()->can('upload-files'))
+    ->canDownload(true)
+    ->canDelete(fn () => auth()->user()->is_admin)
+    ->canRename(fn () => auth()->user()->is_admin)
+    ->canMove(fn () => auth()->user()->is_admin)
+    ->canCreateFolder(fn () => auth()->user()->is_admin)
+```
+
+| Method | Controls |
+|---|---|
+| `canAccess()` | Page access — returns 403 and hides navigation item |
+| `canUpload()` | Upload button and server-side upload |
+| `canDownload()` | Download button |
+| `canDelete()` | Single delete, bulk delete, and keyboard shortcut |
+| `canRename()` | Rename button, context menu, and F2 shortcut |
+| `canMove()` | Drag & drop move and bulk move |
+| `canCreateFolder()` | New folder button and context menu |
+
+All permissions default to `true` when not configured, so existing installations are unaffected.
+
+Each permission is enforced in two layers:
+
+1. **UI** — buttons and menu items are hidden when the permission is denied.
+2. **Server-side** — actions abort with `403` even if the UI check is bypassed.
+
 ## Testing
 
 ```bash
