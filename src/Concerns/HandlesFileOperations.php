@@ -17,7 +17,7 @@ trait HandlesFileOperations
             ->label(__('filament-file-manager::file-manager.toolbar.new_folder'))
             ->icon('heroicon-o-folder-plus')
             ->color('gray')
-            ->visible(FileManagerPlugin::get()->canUserCreateFolder())
+            ->visible(fn (): bool => FileManagerPlugin::get()->canUserCreateFolder($this->currentDisk, $this->currentPath))
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->label(__('filament-file-manager::file-manager.labels.folder_name'))
@@ -29,7 +29,7 @@ trait HandlesFileOperations
                     ]),
             ])
             ->action(function (array $data): void {
-                abort_unless(FileManagerPlugin::get()->canUserCreateFolder(), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
+                abort_unless(FileManagerPlugin::get()->canUserCreateFolder($this->currentDisk, $this->currentPath), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
 
                 try {
                     $this->fileManagerService->createFolder($this->currentDisk, $this->currentPath, $data['name']);
@@ -53,7 +53,7 @@ trait HandlesFileOperations
             ->label(__('filament-file-manager::file-manager.actions.rename'))
             ->icon('heroicon-o-pencil')
             ->color('gray')
-            ->visible(FileManagerPlugin::get()->canUserRename())
+            ->visible(fn (): bool => FileManagerPlugin::get()->canUserRename($this->currentDisk, $this->currentPath))
             ->fillForm(fn (array $arguments): array => [
                 'newName' => basename($arguments['path'] ?? ''),
                 'originalExtension' => pathinfo(basename($arguments['path'] ?? ''), PATHINFO_EXTENSION),
@@ -96,9 +96,8 @@ trait HandlesFileOperations
                     }),
             ])
             ->action(function (array $data, array $arguments): void {
-                abort_unless(FileManagerPlugin::get()->canUserRename(), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
-
                 $path = $arguments['path'] ?? '';
+                abort_unless(FileManagerPlugin::get()->canUserRename($this->currentDisk, $path), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
 
                 try {
                     $this->fileManagerService->rename($this->currentDisk, $path, $data['newName']);
@@ -122,14 +121,13 @@ trait HandlesFileOperations
             ->label(__('filament-file-manager::file-manager.actions.delete'))
             ->icon('heroicon-o-trash')
             ->color('danger')
-            ->visible(FileManagerPlugin::get()->canUserDelete())
+            ->visible(fn (): bool => FileManagerPlugin::get()->canUserDelete($this->currentDisk, $this->currentPath))
             ->requiresConfirmation()
             ->modalHeading(__('filament-file-manager::file-manager.modals.confirm_deletion'))
             ->modalDescription(__('filament-file-manager::file-manager.modals.deletion_warning'))
             ->action(function (array $arguments): void {
-                abort_unless(FileManagerPlugin::get()->canUserDelete(), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
-
                 $path = $arguments['path'] ?? '';
+                abort_unless(FileManagerPlugin::get()->canUserDelete($this->currentDisk, $path), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
                 $name = basename($path);
 
                 $this->fileManagerService->delete($this->currentDisk, $path);
@@ -184,7 +182,7 @@ trait HandlesFileOperations
 
     public function moveItem(string $path, string $destination): void
     {
-        abort_unless(FileManagerPlugin::get()->canUserMove(), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
+        abort_unless(FileManagerPlugin::get()->canUserMove($this->currentDisk, $path), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
 
         try {
             $this->fileManagerService->move($this->currentDisk, $path, $destination);
@@ -204,7 +202,7 @@ trait HandlesFileOperations
 
     public function downloadFile(string $path): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        abort_unless(FileManagerPlugin::get()->canUserDownload(), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
+        abort_unless(FileManagerPlugin::get()->canUserDownload($this->currentDisk, $path), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
 
         return $this->fileManagerService->download($this->currentDisk, $path);
     }

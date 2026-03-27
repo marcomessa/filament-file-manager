@@ -163,39 +163,39 @@ class FileManagerPlugin implements Plugin
         return $this;
     }
 
-    public function hasAccess(): bool
+    public function hasAccess(mixed ...$context): bool
     {
-        return $this->evaluateAbility($this->canAccessUsing);
+        return $this->resolvePermission('access', ...$context);
     }
 
-    public function canUserUpload(): bool
+    public function canUserUpload(mixed ...$context): bool
     {
-        return $this->evaluateAbility($this->canUploadUsing);
+        return $this->resolvePermission('upload', ...$context);
     }
 
-    public function canUserDelete(): bool
+    public function canUserDelete(mixed ...$context): bool
     {
-        return $this->evaluateAbility($this->canDeleteUsing);
+        return $this->resolvePermission('delete', ...$context);
     }
 
-    public function canUserRename(): bool
+    public function canUserRename(mixed ...$context): bool
     {
-        return $this->evaluateAbility($this->canRenameUsing);
+        return $this->resolvePermission('rename', ...$context);
     }
 
-    public function canUserMove(): bool
+    public function canUserMove(mixed ...$context): bool
     {
-        return $this->evaluateAbility($this->canMoveUsing);
+        return $this->resolvePermission('move', ...$context);
     }
 
-    public function canUserDownload(): bool
+    public function canUserDownload(mixed ...$context): bool
     {
-        return $this->evaluateAbility($this->canDownloadUsing);
+        return $this->resolvePermission('download', ...$context);
     }
 
-    public function canUserCreateFolder(): bool
+    public function canUserCreateFolder(mixed ...$context): bool
     {
-        return $this->evaluateAbility($this->canCreateFolderUsing);
+        return $this->resolvePermission('createFolder', ...$context);
     }
 
     /**
@@ -203,15 +203,15 @@ class FileManagerPlugin implements Plugin
      *
      * @return array{canUpload: bool, canDelete: bool, canRename: bool, canMove: bool, canDownload: bool, canCreateFolder: bool}
      */
-    public function getPermissions(): array
+    public function getPermissions(mixed ...$context): array
     {
         return [
-            'canUpload' => $this->canUserUpload(),
-            'canDelete' => $this->canUserDelete(),
-            'canRename' => $this->canUserRename(),
-            'canMove' => $this->canUserMove(),
-            'canDownload' => $this->canUserDownload(),
-            'canCreateFolder' => $this->canUserCreateFolder(),
+            'canUpload' => $this->canUserUpload(...$context),
+            'canDelete' => $this->canUserDelete(...$context),
+            'canRename' => $this->canUserRename(...$context),
+            'canMove' => $this->canUserMove(...$context),
+            'canDownload' => $this->canUserDownload(...$context),
+            'canCreateFolder' => $this->canUserCreateFolder(...$context),
         ];
     }
 
