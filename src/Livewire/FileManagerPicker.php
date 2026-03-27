@@ -150,7 +150,7 @@ class FileManagerPicker extends Component implements HasActions, HasForms
             'listing' => $listing,
             'totalFiles' => $totalFiles,
             'hasMoreFiles' => $hasMoreFiles,
-            'permissions' => FileManagerPlugin::get()->getPermissions(),
+            'permissions' => FileManagerPlugin::get()->getPermissions($this->currentDisk, $this->currentPath),
         ]);
     }
 }

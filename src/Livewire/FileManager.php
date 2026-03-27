@@ -106,7 +106,7 @@ class FileManager extends Component implements HasActions, HasForms
             'totalFiles' => $paginated['totalFiles'],
             'hasMoreFiles' => $paginated['hasMoreFiles'],
             'treeNodes' => $this->buildTreeNodes(),
-            'permissions' => FileManagerPlugin::get()->getPermissions(),
+            'permissions' => FileManagerPlugin::get()->getPermissions($this->currentDisk, $this->currentPath),
         ]);
     }
 }

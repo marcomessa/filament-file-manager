@@ -24,7 +24,7 @@ trait HandlesUpload
             ->label(__('filament-file-manager::file-manager.toolbar.upload'))
             ->icon('heroicon-o-arrow-up-tray')
             ->color('primary')
-            ->visible(FileManagerPlugin::get()->canUserUpload())
+            ->visible(fn (): bool => FileManagerPlugin::get()->canUserUpload($this->currentDisk, $this->currentPath))
             ->schema([
                 Forms\Components\FileUpload::make('files')
                     ->label(__('filament-file-manager::file-manager.labels.file'))
@@ -40,7 +40,7 @@ trait HandlesUpload
                     ]),
             ])
             ->action(function (array $data): void {
-                abort_unless(FileManagerPlugin::get()->canUserUpload(), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
+                abort_unless(FileManagerPlugin::get()->canUserUpload($this->currentDisk, $this->currentPath), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
 
                 $service = $this->fileManagerService;
                 $uploaded = 0;
