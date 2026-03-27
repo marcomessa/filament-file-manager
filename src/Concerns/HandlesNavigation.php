@@ -9,6 +9,7 @@ trait HandlesNavigation
     public function navigateTo(string $path): void
     {
         $this->currentPath = $path;
+        $this->selectedItems = [];
         $this->loadDirectory();
 
         if (method_exists($this, 'ensureAncestorsExpanded')) {
@@ -24,6 +25,7 @@ trait HandlesNavigation
 
         $parent = dirname($this->currentPath);
         $this->currentPath = $parent === '.' ? '' : $parent;
+        $this->selectedItems = [];
         $this->loadDirectory();
     }
 
