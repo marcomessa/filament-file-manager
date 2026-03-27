@@ -3,8 +3,10 @@
 namespace MmesDesign\FilamentFileManager\Concerns;
 
 use MmesDesign\FilamentFileManager\DTOs\DirectoryListing;
+use MmesDesign\FilamentFileManager\DTOs\FolderItem;
 use MmesDesign\FilamentFileManager\Enums\SortDirection;
 use MmesDesign\FilamentFileManager\Enums\SortField;
+use MmesDesign\FilamentFileManager\FileManagerPlugin;
 
 trait HandlesPagination
 {
@@ -56,8 +58,13 @@ trait HandlesPagination
             perPage: $this->getPerPage(),
         );
 
+        $plugin = FileManagerPlugin::get();
+        $listing = $result['listing']->filterFolders(
+            fn (FolderItem $folder): bool => $plugin->canUserBrowse($this->currentDisk, $folder->path),
+        );
+
         return [
-            'listing' => $result['listing'],
+            'listing' => $listing,
             'totalFiles' => $result['totalFiles'],
             'hasMoreFiles' => $result['hasMore'],
         ];

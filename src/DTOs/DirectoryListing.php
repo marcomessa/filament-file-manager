@@ -26,6 +26,19 @@ readonly class DirectoryListing
     }
 
     /**
+     * @param  callable(FolderItem): bool  $callback
+     */
+    public function filterFolders(callable $callback): self
+    {
+        return new self(
+            path: $this->path,
+            disk: $this->disk,
+            folders: array_values(array_filter($this->folders, $callback)),
+            files: $this->files,
+        );
+    }
+
+    /**
      * @param  callable(FileItem): bool  $callback
      */
     public function filterFiles(callable $callback): self

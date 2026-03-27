@@ -3,6 +3,7 @@
 namespace MmesDesign\FilamentFileManager\Concerns;
 
 use Illuminate\Support\Facades\Storage;
+use MmesDesign\FilamentFileManager\FileManagerPlugin;
 
 trait HandlesFolderTree
 {
@@ -53,17 +54,32 @@ trait HandlesFolderTree
     public function buildTreeNodes(): array
     {
         $disk = Storage::disk($this->currentDisk);
+        $plugin = FileManagerPlugin::get();
         $nodes = [];
 
-        // Always load root
-        $nodes[''] = $this->mapDirectories($disk->directories(''));
+        $nodes[''] = $this->mapDirectories(
+            $this->filterBrowsableDirectories($plugin, $disk->directories(''))
+        );
 
-        // Load children for each expanded folder
         foreach ($this->expandedFolders as $folder) {
-            $nodes[$folder] = $this->mapDirectories($disk->directories($folder));
+            $nodes[$folder] = $this->mapDirectories(
+                $this->filterBrowsableDirectories($plugin, $disk->directories($folder))
+            );
         }
 
         return $nodes;
+    }
+
+    /**
+     * @param  array<int, string>  $directories
+     * @return array<int, string>
+     */
+    protected function filterBrowsableDirectories(FileManagerPlugin $plugin, array $directories): array
+    {
+        return array_values(array_filter(
+            $directories,
+            fn (string $dir): bool => $plugin->canUserBrowse($this->currentDisk, $dir),
+        ));
     }
 
     /**

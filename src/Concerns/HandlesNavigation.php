@@ -2,12 +2,18 @@
 
 namespace MmesDesign\FilamentFileManager\Concerns;
 
+use MmesDesign\FilamentFileManager\FileManagerPlugin;
+
 trait HandlesNavigation
 {
     public string $currentPath = '';
 
     public function navigateTo(string $path): void
     {
+        if ($path !== '' && ! FileManagerPlugin::get()->canUserBrowse($this->currentDisk, $path)) {
+            return;
+        }
+
         $this->currentPath = $path;
         $this->selectedItems = [];
         $this->loadDirectory();
