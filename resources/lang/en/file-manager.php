@@ -109,6 +109,13 @@ return [
         'other' => 'Other',
     ],
 
+    'editors' => [
+        'file_manager' => 'File Manager',
+        'insert' => 'Insert',
+        'select_files' => 'Select files to insert',
+        'no_url_warning' => 'Some files were skipped because they have no public URL.',
+    ],
+
     'misc' => [
         'empty_folder' => 'This folder is empty',
         'empty_folder_hint' => 'Upload files or create a new folder to get started',

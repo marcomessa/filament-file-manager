@@ -164,6 +164,55 @@ FilePicker::make('private_doc')
     ->disk('local')
 ```
 
+### RichEditor integration
+
+Insert files from the File Manager directly into Filament's `RichEditor`. Images are inserted as `<img>` tags, other files as `<a>` links.
+
+```php
+use Filament\Forms\Components\RichEditor;
+use MmesDesign\FilamentFileManager\RichEditor\FileManagerRichEditorPlugin;
+
+RichEditor::make('content')
+    ->plugins([
+        FileManagerRichEditorPlugin::make(),
+    ])
+    ->enableToolbarButtons(['fileManager'])
+```
+
+A "File Manager" button appears in the editor toolbar. Clicking it opens a slide-over picker where you can browse and select files. On confirmation, the selected files are inserted at the cursor position.
+
+#### Plugin options
+
+```php
+FileManagerRichEditorPlugin::make()
+    ->disk('public')                                      // filesystem disk (default: config value)
+    ->multiple()                                          // allow multiple selection (default: true)
+    ->acceptedCategories([FileCategory::Image])           // restrict to specific categories
+```
+
+### MarkdownEditor integration
+
+Insert files from the File Manager into a Markdown editor. Images are inserted as `![alt](url)`, other files as `[name](url)`.
+
+```php
+use MmesDesign\FilamentFileManager\Forms\Components\FileManagerMarkdownEditor;
+
+FileManagerMarkdownEditor::make('content')
+```
+
+This extends Filament's `MarkdownEditor` and adds a "File Manager" hint action button (top-right of the field). Clicking it opens the same slide-over picker. Selected files are inserted as markdown at the cursor position.
+
+#### Field options
+
+```php
+FileManagerMarkdownEditor::make('content')
+    ->fmDisk('public')                                    // filesystem disk (default: config value)
+    ->fmMultiple()                                        // allow multiple selection (default: true)
+    ->fmAcceptedCategories([FileCategory::Image])         // restrict to specific categories
+```
+
+> **Note:** `FileManagerMarkdownEditor` inherits all standard `MarkdownEditor` methods (`placeholder()`, `toolbarButtons()`, `minHeight()`, etc.).
+
 ## Permissions
 
 Control who can perform specific actions in the file manager. Permissions are configured on the plugin instance and accept a `bool` or a `Closure`:

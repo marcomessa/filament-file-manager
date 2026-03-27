@@ -109,6 +109,13 @@ return [
         'other' => 'Altro',
     ],
 
+    'editors' => [
+        'file_manager' => 'Gestione File',
+        'insert' => 'Inserisci',
+        'select_files' => 'Seleziona i file da inserire',
+        'no_url_warning' => 'Alcuni file sono stati ignorati perché non hanno un URL pubblico.',
+    ],
+
     'misc' => [
         'empty_folder' => 'Questa cartella è vuota',
         'empty_folder_hint' => 'Carica file o crea una nuova cartella per iniziare',
