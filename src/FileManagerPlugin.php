@@ -198,6 +198,11 @@ class FileManagerPlugin implements Plugin
         return $this->resolvePermission('createFolder', ...$context);
     }
 
+    public function canUserBrowse(mixed ...$context): bool
+    {
+        return $this->resolvePermission('browse', ...$context);
+    }
+
     /**
      * Build a permissions array for passing to Blade views.
      *
@@ -212,6 +217,7 @@ class FileManagerPlugin implements Plugin
             'canMove' => $this->canUserMove(...$context),
             'canDownload' => $this->canUserDownload(...$context),
             'canCreateFolder' => $this->canUserCreateFolder(...$context),
+            'canBrowse' => $this->canUserBrowse(...$context),
         ];
     }
 
