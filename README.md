@@ -1,20 +1,23 @@
 # Filament File Manager
 
-A file manager plugin for [Filament](https://filamentphp.com). Browse, upload, rename, move, and delete files directly from your admin panel.
+A powerful file manager plugin for [Filament](https://filamentphp.com). Browse, upload, rename, move, and delete files directly from your admin panel.
 
 ![Filament File Manager](https://raw.githubusercontent.com/marcomessa/filament-file-manager/main/art/screenshot.png)
 
 ## Features
 
-- Grid and list view with sorting (name, size, date, type)
-- Upload files with size and batch limits
+- File Manager page with grid and list views
+- Sorting by name, size, date, and type
+- Drag-and-drop file upload with size and batch limits
 - Create, rename, move, and delete files and folders
 - Bulk operations (delete, move) with multi-select
+- Breadcrumb navigation
+- Keyboard shortcuts (Ctrl+A, Delete, F2, Escape)
 - File preview for images, video, audio, code, and documents
 - Automatic thumbnail generation for images
 - `FilePicker` form component for selecting files in your resources
-- Breadcrumb navigation
-- Keyboard shortcuts (Ctrl+A, Delete, F2, Escape)
+- `RichEditor` and `MarkdownEditor` integration
+- Granular permissions (access, upload, download, delete, rename, move, create folder)
 - Dark mode support
 - Translations (English, Italian)
 - Security: path sanitization and blocked dangerous extensions
@@ -45,215 +48,13 @@ public function panel(Panel $panel): Panel
 }
 ```
 
-Add the package to your Tailwind CSS sources in `resources/css/app.css`:
+## Documentation
 
-```css
-@source '../../vendor/mmes-design/filament-file-manager';
-```
+Full documentation is available at **[docs.mmes.dev/filament-file-manager](https://docs.mmes.dev/filament-file-manager)**.
 
-Publish the assets:
+## PRO Version
 
-```bash
-php artisan filament:assets
-```
-
-Publish the configuration (optional):
-
-```bash
-php artisan vendor:publish --tag=filament-file-manager-config
-```
-
-## Configuration
-
-### Plugin options
-
-```php
-FileManagerPlugin::make()
-    ->defaultDisk('public')
-    ->navigationGroup('Content')
-    ->navigationIcon('heroicon-o-folder')
-    ->navigationSort(5)
-```
-
-### Disk
-
-This package supports local disks only (`local`, `public`). Remote disks (S3, FTP, etc.) are available in the Pro version.
-
-### Config file
-
-The published config file (`config/filament-file-manager.php`) lets you customize:
-
-```php
-return [
-    // Default filesystem disk
-    'disk' => 'public',
-
-    // Blocked file extensions
-    'denied_extensions' => [
-        'php', 'exe', 'bat', 'sh', 'bash', // ...
-    ],
-
-    // Upload limits
-    'max_upload_size' => 50 * 1024,    // 50 MB in KB
-    'max_uploads_per_batch' => 20,
-
-    // Infinite scroll: files loaded per batch (folders always load fully)
-    'per_page' => 50,
-
-    // Thumbnail settings
-    'thumbnails' => [
-        'enabled' => true,
-        'directory' => '.thumbnails',
-        'width' => 200,
-        'height' => 200,
-        'quality' => 80,
-    ],
-];
-```
-
-## Usage
-
-### File Manager page
-
-The plugin registers a File Manager page in your panel navigation automatically. It includes folder navigation, breadcrumbs, upload, bulk operations, preview, and sorting.
-
-### FilePicker form component
-
-Use `FilePicker` in your Filament resources to let users select files:
-
-```php
-use MmesDesign\FilamentFileManager\Forms\Components\FilePicker;
-
-FilePicker::make('document')
-```
-
-#### Multiple selection
-
-```php
-FilePicker::make('attachments')
-    ->multiple()
-```
-
-#### Filter by file category
-
-```php
-use MmesDesign\FilamentFileManager\Enums\FileCategory;
-
-FilePicker::make('photo')
-    ->acceptedCategories([FileCategory::Image])
-
-FilePicker::make('media')
-    ->acceptedCategories([FileCategory::Image, FileCategory::Video])
-```
-
-Available categories: `Image`, `Document`, `Audio`, `Video`, `Archive`, `Code`, `Other`.
-
-#### Image preview
-
-When the only accepted category is `Image`, thumbnail preview is enabled automatically. You can also enable it manually:
-
-```php
-FilePicker::make('cover')
-    ->imagePreview()
-```
-
-#### Specific disk
-
-```php
-FilePicker::make('private_doc')
-    ->disk('local')
-```
-
-### RichEditor integration
-
-Insert files from the File Manager directly into Filament's `RichEditor`. Images are inserted as `<img>` tags, other files as `<a>` links.
-
-```php
-use Filament\Forms\Components\RichEditor;
-use MmesDesign\FilamentFileManager\RichEditor\FileManagerRichEditorPlugin;
-
-RichEditor::make('content')
-    ->plugins([
-        FileManagerRichEditorPlugin::make(),
-    ])
-    ->enableToolbarButtons(['fileManager'])
-```
-
-A "File Manager" button appears in the editor toolbar. Clicking it opens a slide-over picker where you can browse and select files. On confirmation, the selected files are inserted at the cursor position.
-
-#### Plugin options
-
-```php
-FileManagerRichEditorPlugin::make()
-    ->disk('public')                                      // filesystem disk (default: config value)
-    ->multiple()                                          // allow multiple selection (default: true)
-    ->acceptedCategories([FileCategory::Image])           // restrict to specific categories
-```
-
-### MarkdownEditor integration
-
-Insert files from the File Manager into a Markdown editor. Images are inserted as `![alt](url)`, other files as `[name](url)`.
-
-```php
-use MmesDesign\FilamentFileManager\Forms\Components\FileManagerMarkdownEditor;
-
-FileManagerMarkdownEditor::make('content')
-```
-
-This extends Filament's `MarkdownEditor` and adds a "File Manager" hint action button (top-right of the field). Clicking it opens the same slide-over picker. Selected files are inserted as markdown at the cursor position.
-
-#### Field options
-
-```php
-FileManagerMarkdownEditor::make('content')
-    ->fmDisk('public')                                    // filesystem disk (default: config value)
-    ->fmMultiple()                                        // allow multiple selection (default: true)
-    ->fmAcceptedCategories([FileCategory::Image])         // restrict to specific categories
-```
-
-> **Note:** `FileManagerMarkdownEditor` inherits all standard `MarkdownEditor` methods (`placeholder()`, `toolbarButtons()`, `minHeight()`, etc.).
-
-## Permissions
-
-Control who can perform specific actions in the file manager. Permissions are configured on the plugin instance and accept a `bool` or a `Closure`:
-
-```php
-FileManagerPlugin::make()
-    ->canAccess(fn () => auth()->user()->is_admin)
-    ->canUpload(fn () => auth()->user()->can('upload-files'))
-    ->canDownload(true)
-    ->canDelete(fn () => auth()->user()->is_admin)
-    ->canRename(fn () => auth()->user()->is_admin)
-    ->canMove(fn () => auth()->user()->is_admin)
-    ->canCreateFolder(fn () => auth()->user()->is_admin)
-```
-
-| Method | Controls |
-|---|---|
-| `canAccess()` | Page access — returns 403 and hides navigation item |
-| `canUpload()` | Upload button and server-side upload |
-| `canDownload()` | Download button |
-| `canDelete()` | Single delete, bulk delete, and keyboard shortcut |
-| `canRename()` | Rename button, context menu, and F2 shortcut |
-| `canMove()` | Drag & drop move and bulk move |
-| `canCreateFolder()` | New folder button and context menu |
-
-All permissions default to `true` when not configured, so existing installations are unaffected.
-
-Each permission is enforced in two layers:
-
-1. **UI** — buttons and menu items are hidden when the permission is denied.
-2. **Server-side** — actions abort with `403` even if the UI check is bypassed.
-
-## Testing
-
-```bash
-composer test
-```
-
-## Changelog
-
-Please see [CHANGELOG](https://github.com/marcomessa/filament-file-manager/blob/main/CHANGELOG.md) for more information on what has changed recently.
+Need remote disks (S3, GCS, FTP/SFTP), multi-disk switching, Spatie Media Library integration, and more? Check out **[Filament File Manager PRO](https://docs.mmes.dev/filament-file-manager/upgrading-to-pro)**.
 
 ## License
 
