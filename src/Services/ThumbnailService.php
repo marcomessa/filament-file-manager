@@ -98,7 +98,9 @@ class ThumbnailService
             $encoded = $image->encodeByExtension($extension, quality: $quality);
 
             $thumbnailPath = $this->thumbnailPath($path);
-            $storage->put($thumbnailPath, (string) $encoded);
+            $visibility = config("filesystems.disks.{$disk}.visibility");
+            $options = $visibility ? ['visibility' => $visibility] : [];
+            $storage->put($thumbnailPath, (string) $encoded, $options);
 
             return true;
         } catch (\Throwable $e) {
