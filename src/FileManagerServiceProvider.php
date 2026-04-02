@@ -18,6 +18,10 @@ class FileManagerServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'filament-file-manager');
 
         if ($this->app->runningInConsole()) {
+            $this->commands([
+                \MmesDesign\FilamentFileManager\Console\Commands\ClearThumbnailsCommand::class,
+            ]);
+
             $this->publishes([
                 __DIR__.'/../config/filament-file-manager.php' => config_path('filament-file-manager.php'),
             ], 'filament-file-manager-config');

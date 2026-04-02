@@ -116,6 +116,12 @@ return [
         'no_url_warning' => 'Alcuni file sono stati ignorati perché non hanno un URL pubblico.',
     ],
 
+    'commands' => [
+        'thumbnails_cleared' => 'Miniature eliminate con successo dal disco [:disk].',
+        'no_thumbnails' => 'Nessuna cartella miniature trovata sul disco [:disk].',
+        'remote_disk_not_supported' => 'Il disco [:disk] usa il driver [:driver]. I dischi remoti sono disponibili nella versione Pro.',
+    ],
+
     'misc' => [
         'empty_folder' => 'Questa cartella è vuota',
         'empty_folder_hint' => 'Carica file o crea una nuova cartella per iniziare',
