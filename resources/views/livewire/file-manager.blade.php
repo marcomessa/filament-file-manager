@@ -3,8 +3,18 @@
         previewFile: null,
         folderSidebarOpen: localStorage.getItem('fm-folder-sidebar') !== 'false',
         previewSidebarOpen: localStorage.getItem('fm-preview-sidebar') !== 'false',
+        async generateThumbnails() {
+            const generated = await $wire.generateMissingThumbnails();
+            if (generated > 0) {
+                this.generateThumbnails();
+            }
+        },
         init() {
             $wire.$watch('currentPath', () => { this.previewFile = null; });
+            this.generateThumbnails();
+            $wire.$watch('currentDisk', () => this.generateThumbnails());
+            $wire.$watch('currentPath', () => this.generateThumbnails());
+            $wire.$watch('filePage', () => this.generateThumbnails());
         },
         handleKeydown(e) {
             // Escape: close sidebar preview, or clear selection

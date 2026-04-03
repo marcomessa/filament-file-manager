@@ -39,6 +39,42 @@ readonly class FileItem
         return round($this->size / (1024 * 1024 * 1024), 1).' GB';
     }
 
+    /**
+     * @return array{name: string, path: string, size: int, lastModified: int, extension: string, category: string, mimeType: string, url: ?string, thumbnailUrl: ?string}
+     */
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'path' => $this->path,
+            'size' => $this->size,
+            'lastModified' => $this->lastModified,
+            'extension' => $this->extension,
+            'category' => $this->category->value,
+            'mimeType' => $this->mimeType,
+            'url' => $this->url,
+            'thumbnailUrl' => $this->thumbnailUrl,
+        ];
+    }
+
+    /**
+     * @param  array{name: string, path: string, size: int, lastModified: int, extension: string, category: string, mimeType: string, url: ?string, thumbnailUrl: ?string}  $data
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            name: $data['name'],
+            path: $data['path'],
+            size: $data['size'],
+            lastModified: $data['lastModified'],
+            extension: $data['extension'],
+            category: FileCategory::from($data['category']),
+            mimeType: $data['mimeType'],
+            url: $data['url'] ?? null,
+            thumbnailUrl: $data['thumbnailUrl'] ?? null,
+        );
+    }
+
     public function isImage(): bool
     {
         return $this->category === FileCategory::Image;

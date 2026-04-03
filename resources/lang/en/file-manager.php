@@ -116,6 +116,12 @@ return [
         'no_url_warning' => 'Some files were skipped because they have no public URL.',
     ],
 
+    'commands' => [
+        'thumbnails_cleared' => 'Thumbnails cleared successfully on disk [:disk].',
+        'no_thumbnails' => 'No thumbnails directory found on disk [:disk].',
+        'remote_disk_not_supported' => 'The [:disk] disk uses the [:driver] driver. Remote disks are available in the Pro version.',
+    ],
+
     'misc' => [
         'empty_folder' => 'This folder is empty',
         'empty_folder_hint' => 'Upload files or create a new folder to get started',

@@ -178,7 +178,7 @@ class FileManagerPageTest extends TestCase
             ->assertSee('report.pdf');
     }
 
-    public function test_thumbnail_generated_server_side_for_valid_image(): void
+    public function test_thumbnail_generated_lazily_for_valid_image(): void
     {
         $image = $this->createTestImage(400, 300);
         Storage::disk('public')->put('photo.jpg', $image);
@@ -186,7 +186,8 @@ class FileManagerPageTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class);
+        Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
+            ->call('generateMissingThumbnails');
 
         Storage::disk('public')->assertExists('.thumbnails/photo.jpg');
     }

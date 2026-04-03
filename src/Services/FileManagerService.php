@@ -67,11 +67,14 @@ class FileManagerService
         SortDirection $sortDirection,
     ): DirectoryListing {
         $path = $path === '' ? '' : $this->pathSanitizer->sanitize($path);
-        $cacheKey = "fm:{$disk}:{$path}:{$sortField->value}:{$sortDirection->value}";
+        $version = $this->getDiskCacheVersion($disk);
+        $cacheKey = "fml:{$disk}:v{$version}:{$path}:{$sortField->value}:{$sortDirection->value}";
 
-        return Cache::remember($cacheKey, 60, function () use ($disk, $path, $sortField, $sortDirection): DirectoryListing {
-            return $this->buildDirectoryListing($disk, $path, $sortField, $sortDirection);
+        $cached = Cache::remember($cacheKey, 60, function () use ($disk, $path, $sortField, $sortDirection): array {
+            return $this->buildDirectoryListing($disk, $path, $sortField, $sortDirection)->toArray();
         });
+
+        return DirectoryListing::fromArray($cached);
     }
 
     protected function buildDirectoryListing(
@@ -320,7 +323,7 @@ class FileManagerService
 
                 $url = $this->getUrl($disk, $file);
                 $thumbnailUrl = in_array($extension, FileItem::THUMBNAILABLE_EXTENSIONS, true)
-                    ? $this->thumbnailService->getThumbnailUrl($disk, $file)
+                    ? $this->thumbnailService->getExistingThumbnailUrl($disk, $file)
                     : null;
 
                 return new FileItem(
@@ -382,11 +385,32 @@ class FileManagerService
         });
     }
 
+    public function clearDirectoryCache(string $disk, string $directory): void
+    {
+        $this->invalidateCache($disk, $directory);
+    }
+
+    /**
+     * Invalidate all cached listings for a disk by bumping the cache version.
+     * Old cache entries become orphaned and expire naturally.
+     */
+    public function invalidateDiskCache(string $disk): void
+    {
+        Cache::increment("fml:{$disk}:cache_version");
+    }
+
+    protected function getDiskCacheVersion(string $disk): int
+    {
+        return (int) Cache::get("fml:{$disk}:cache_version", 0);
+    }
+
     protected function invalidateCache(string $disk, string $directory): void
     {
+        $version = $this->getDiskCacheVersion($disk);
+
         foreach (SortField::cases() as $field) {
             foreach (SortDirection::cases() as $direction) {
-                Cache::forget("fm:{$disk}:{$directory}:{$field->value}:{$direction->value}");
+                Cache::forget("fml:{$disk}:v{$version}:{$directory}:{$field->value}:{$direction->value}");
             }
         }
     }
