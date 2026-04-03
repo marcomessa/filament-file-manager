@@ -29,7 +29,7 @@ class MetadataCacheTest extends TestCase
         $listing2 = $this->service->listDirectory('public');
 
         $this->assertEquals($listing1, $listing2);
-        $this->assertTrue(Cache::has('fm:public:v0::name:asc'));
+        $this->assertTrue(Cache::has('fml:public:v0::name:asc'));
     }
 
     public function test_cache_key_includes_sort_parameters(): void
@@ -37,8 +37,8 @@ class MetadataCacheTest extends TestCase
         Storage::disk('public')->put('file.txt', 'content');
 
         $this->service->listDirectory('public');
-        $this->assertTrue(Cache::has('fm:public:v0::name:asc'));
-        $this->assertFalse(Cache::has('fm:public:v0::size:desc'));
+        $this->assertTrue(Cache::has('fml:public:v0::name:asc'));
+        $this->assertFalse(Cache::has('fml:public:v0::size:desc'));
 
         $this->service->listDirectory(
             'public',
@@ -46,7 +46,7 @@ class MetadataCacheTest extends TestCase
             \MmesDesign\FilamentFileManager\Enums\SortField::Size,
             \MmesDesign\FilamentFileManager\Enums\SortDirection::Desc,
         );
-        $this->assertTrue(Cache::has('fm:public:v0::size:desc'));
+        $this->assertTrue(Cache::has('fml:public:v0::size:desc'));
     }
 
     public function test_cache_key_includes_path(): void
@@ -55,52 +55,52 @@ class MetadataCacheTest extends TestCase
 
         $this->service->listDirectory('public', 'subdir');
 
-        $this->assertTrue(Cache::has('fm:public:v0:subdir:name:asc'));
-        $this->assertFalse(Cache::has('fm:public:v0::name:asc'));
+        $this->assertTrue(Cache::has('fml:public:v0:subdir:name:asc'));
+        $this->assertFalse(Cache::has('fml:public:v0::name:asc'));
     }
 
     public function test_upload_invalidates_cache(): void
     {
         Storage::disk('public')->put('existing.txt', 'content');
         $this->service->listDirectory('public');
-        $this->assertTrue(Cache::has('fm:public:v0::name:asc'));
+        $this->assertTrue(Cache::has('fml:public:v0::name:asc'));
 
         $file = UploadedFile::fake()->create('new.txt', 100);
         $this->service->upload('public', '', $file);
 
-        $this->assertFalse(Cache::has('fm:public:v0::name:asc'));
+        $this->assertFalse(Cache::has('fml:public:v0::name:asc'));
     }
 
     public function test_delete_invalidates_cache(): void
     {
         Storage::disk('public')->put('file.txt', 'content');
         $this->service->listDirectory('public');
-        $this->assertTrue(Cache::has('fm:public:v0::name:asc'));
+        $this->assertTrue(Cache::has('fml:public:v0::name:asc'));
 
         $this->service->delete('public', 'file.txt');
 
-        $this->assertFalse(Cache::has('fm:public:v0::name:asc'));
+        $this->assertFalse(Cache::has('fml:public:v0::name:asc'));
     }
 
     public function test_rename_invalidates_cache(): void
     {
         Storage::disk('public')->put('old.txt', 'content');
         $this->service->listDirectory('public');
-        $this->assertTrue(Cache::has('fm:public:v0::name:asc'));
+        $this->assertTrue(Cache::has('fml:public:v0::name:asc'));
 
         $this->service->rename('public', 'old.txt', 'new.txt');
 
-        $this->assertFalse(Cache::has('fm:public:v0::name:asc'));
+        $this->assertFalse(Cache::has('fml:public:v0::name:asc'));
     }
 
     public function test_create_folder_invalidates_cache(): void
     {
         $this->service->listDirectory('public');
-        $this->assertTrue(Cache::has('fm:public:v0::name:asc'));
+        $this->assertTrue(Cache::has('fml:public:v0::name:asc'));
 
         $this->service->createFolder('public', '', 'newfolder');
 
-        $this->assertFalse(Cache::has('fm:public:v0::name:asc'));
+        $this->assertFalse(Cache::has('fml:public:v0::name:asc'));
     }
 
     public function test_move_invalidates_both_source_and_destination_cache(): void
@@ -111,13 +111,13 @@ class MetadataCacheTest extends TestCase
         $this->service->listDirectory('public');
         $this->service->listDirectory('public', 'target');
 
-        $this->assertTrue(Cache::has('fm:public:v0::name:asc'));
-        $this->assertTrue(Cache::has('fm:public:v0:target:name:asc'));
+        $this->assertTrue(Cache::has('fml:public:v0::name:asc'));
+        $this->assertTrue(Cache::has('fml:public:v0:target:name:asc'));
 
         $this->service->move('public', 'file.txt', 'target');
 
-        $this->assertFalse(Cache::has('fm:public:v0::name:asc'));
-        $this->assertFalse(Cache::has('fm:public:v0:target:name:asc'));
+        $this->assertFalse(Cache::has('fml:public:v0::name:asc'));
+        $this->assertFalse(Cache::has('fml:public:v0:target:name:asc'));
     }
 
     public function test_invalidation_clears_all_sort_combinations(): void
@@ -129,14 +129,14 @@ class MetadataCacheTest extends TestCase
         $this->service->listDirectory('public', '', \MmesDesign\FilamentFileManager\Enums\SortField::Size);
         $this->service->listDirectory('public', '', \MmesDesign\FilamentFileManager\Enums\SortField::Date);
 
-        $this->assertTrue(Cache::has('fm:public:v0::name:asc'));
-        $this->assertTrue(Cache::has('fm:public:v0::size:asc'));
-        $this->assertTrue(Cache::has('fm:public:v0::date:asc'));
+        $this->assertTrue(Cache::has('fml:public:v0::name:asc'));
+        $this->assertTrue(Cache::has('fml:public:v0::size:asc'));
+        $this->assertTrue(Cache::has('fml:public:v0::date:asc'));
 
         $this->service->delete('public', 'file.txt');
 
-        $this->assertFalse(Cache::has('fm:public:v0::name:asc'));
-        $this->assertFalse(Cache::has('fm:public:v0::size:asc'));
-        $this->assertFalse(Cache::has('fm:public:v0::date:asc'));
+        $this->assertFalse(Cache::has('fml:public:v0::name:asc'));
+        $this->assertFalse(Cache::has('fml:public:v0::size:asc'));
+        $this->assertFalse(Cache::has('fml:public:v0::date:asc'));
     }
 }

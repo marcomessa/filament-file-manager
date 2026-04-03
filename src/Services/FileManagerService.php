@@ -68,11 +68,13 @@ class FileManagerService
     ): DirectoryListing {
         $path = $path === '' ? '' : $this->pathSanitizer->sanitize($path);
         $version = $this->getDiskCacheVersion($disk);
-        $cacheKey = "fm:{$disk}:v{$version}:{$path}:{$sortField->value}:{$sortDirection->value}";
+        $cacheKey = "fml:{$disk}:v{$version}:{$path}:{$sortField->value}:{$sortDirection->value}";
 
-        return Cache::remember($cacheKey, 60, function () use ($disk, $path, $sortField, $sortDirection): DirectoryListing {
-            return $this->buildDirectoryListing($disk, $path, $sortField, $sortDirection);
+        $cached = Cache::remember($cacheKey, 60, function () use ($disk, $path, $sortField, $sortDirection): array {
+            return $this->buildDirectoryListing($disk, $path, $sortField, $sortDirection)->toArray();
         });
+
+        return DirectoryListing::fromArray($cached);
     }
 
     protected function buildDirectoryListing(
@@ -394,12 +396,12 @@ class FileManagerService
      */
     public function invalidateDiskCache(string $disk): void
     {
-        Cache::increment("fm:{$disk}:cache_version");
+        Cache::increment("fml:{$disk}:cache_version");
     }
 
     protected function getDiskCacheVersion(string $disk): int
     {
-        return (int) Cache::get("fm:{$disk}:cache_version", 0);
+        return (int) Cache::get("fml:{$disk}:cache_version", 0);
     }
 
     protected function invalidateCache(string $disk, string $directory): void
@@ -408,7 +410,7 @@ class FileManagerService
 
         foreach (SortField::cases() as $field) {
             foreach (SortDirection::cases() as $direction) {
-                Cache::forget("fm:{$disk}:v{$version}:{$directory}:{$field->value}:{$direction->value}");
+                Cache::forget("fml:{$disk}:v{$version}:{$directory}:{$field->value}:{$direction->value}");
             }
         }
     }
