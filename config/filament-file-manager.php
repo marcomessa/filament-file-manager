@@ -65,6 +65,7 @@ return [
         'width' => 200,
         'height' => 200,
         'quality' => 80,
+        'batch_size' => 5,
     ],
 
 ];

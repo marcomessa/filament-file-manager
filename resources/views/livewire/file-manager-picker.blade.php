@@ -1,4 +1,19 @@
-<div class="flex h-full flex-col gap-4">
+<div
+    class="flex h-full flex-col gap-4"
+    x-data="{
+        async generateThumbnails() {
+            const generated = await $wire.generateMissingThumbnails();
+            if (generated > 0) {
+                this.generateThumbnails();
+            }
+        },
+    }"
+    x-init="
+        generateThumbnails();
+        $wire.$watch('currentPath', () => generateThumbnails());
+        $wire.$watch('filePage', () => generateThumbnails());
+    "
+>
     {{-- Toolbar --}}
     <div class="flex flex-wrap items-center justify-between gap-3">
         {{-- Left: actions --}}

@@ -15,6 +15,7 @@ use MmesDesign\FilamentFileManager\Concerns\HandlesFolderTree;
 use MmesDesign\FilamentFileManager\Concerns\HandlesNavigation;
 use MmesDesign\FilamentFileManager\Concerns\HandlesPagination;
 use MmesDesign\FilamentFileManager\Concerns\HandlesSelection;
+use MmesDesign\FilamentFileManager\Concerns\HandlesThumbnails;
 use MmesDesign\FilamentFileManager\Concerns\HandlesUpload;
 use MmesDesign\FilamentFileManager\Enums\SortDirection;
 use MmesDesign\FilamentFileManager\Enums\ViewMode;
@@ -30,6 +31,7 @@ class FileManager extends Component implements HasActions, HasForms
     use HandlesNavigation;
     use HandlesPagination;
     use HandlesSelection;
+    use HandlesThumbnails;
     use InteractsWithActions;
     use HandlesUpload, InteractsWithForms {
         HandlesUpload::_uploadErrored insteadof InteractsWithForms;

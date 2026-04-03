@@ -321,7 +321,7 @@ class FileManagerService
 
                 $url = $this->getUrl($disk, $file);
                 $thumbnailUrl = in_array($extension, FileItem::THUMBNAILABLE_EXTENSIONS, true)
-                    ? $this->thumbnailService->getThumbnailUrl($disk, $file)
+                    ? $this->thumbnailService->getExistingThumbnailUrl($disk, $file)
                     : null;
 
                 return new FileItem(

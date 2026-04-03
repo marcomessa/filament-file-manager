@@ -13,6 +13,7 @@ use MmesDesign\FilamentFileManager\Concerns\HandlesFileOperations;
 use MmesDesign\FilamentFileManager\Concerns\HandlesNavigation;
 use MmesDesign\FilamentFileManager\Concerns\HandlesPagination;
 use MmesDesign\FilamentFileManager\Concerns\HandlesSelection;
+use MmesDesign\FilamentFileManager\Concerns\HandlesThumbnails;
 use MmesDesign\FilamentFileManager\Concerns\HandlesUpload;
 use MmesDesign\FilamentFileManager\Enums\FileCategory;
 use MmesDesign\FilamentFileManager\Enums\SortDirection;
@@ -27,6 +28,7 @@ class FileManagerPicker extends Component implements HasActions, HasForms
     use HandlesNavigation;
     use HandlesPagination;
     use HandlesSelection;
+    use HandlesThumbnails;
     use InteractsWithActions;
     use HandlesUpload, InteractsWithForms {
         HandlesUpload::_uploadErrored insteadof InteractsWithForms;
