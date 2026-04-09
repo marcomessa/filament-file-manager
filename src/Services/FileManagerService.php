@@ -2,10 +2,12 @@
 
 namespace MmesDesign\FilamentFileManager\Services;
 
-use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\DirectoryAttributes;
+use League\Flysystem\FileAttributes;
 use MmesDesign\FilamentFileManager\DTOs\DirectoryListing;
 use MmesDesign\FilamentFileManager\DTOs\FileItem;
 use MmesDesign\FilamentFileManager\DTOs\FolderItem;
@@ -87,8 +89,8 @@ class FileManagerService
 
         $rawData = $this->fetchDirectoryContents($storage, $path);
 
-        $folders = $this->buildFolderItems($rawData['directories'], $storage);
-        $files = $this->buildFileItems($rawData['files'], $storage, $disk);
+        $folders = $this->buildFolderItems($rawData['directories']);
+        $files = $this->buildFileItems($rawData['files'], $disk);
 
         $folders = $this->sortFolders($folders, $sortField, $sortDirection);
         $files = $this->sortFiles($files, $sortField, $sortDirection);
@@ -263,74 +265,73 @@ class FileManagerService
     }
 
     /**
-     * @return array{directories: array<int, string>, files: array<int, string>}
+     * Fetch directory contents in a single Flysystem listContents() call.
+     * Returns pre-fetched metadata (size, lastModified) to avoid N+1 API calls on remote disks.
+     *
+     * @return array{directories: list<DirectoryAttributes>, files: list<FileAttributes>}
      */
-    protected function fetchDirectoryContents(Filesystem $storage, string $path): array
+    protected function fetchDirectoryContents(FilesystemAdapter $storage, string $path): array
     {
+        $directories = [];
+        $files = [];
+
+        foreach ($storage->getDriver()->listContents($path) as $item) {
+            if ($item instanceof DirectoryAttributes) {
+                $directories[] = $item;
+            } elseif ($item instanceof FileAttributes) {
+                $files[] = $item;
+            }
+        }
+
         return [
-            'directories' => $storage->directories($path),
-            'files' => $storage->files($path),
+            'directories' => $directories,
+            'files' => $files,
         ];
     }
 
     /**
-     * @param  array<int, string>  $directories
+     * @param  list<DirectoryAttributes>  $directories
      * @return array<int, FolderItem>
      */
-    protected function buildFolderItems(array $directories, Filesystem $storage): array
+    protected function buildFolderItems(array $directories): array
     {
-        return array_map(function (string $directory) use ($storage): FolderItem {
-            try {
-                $lastModified = $storage->lastModified($directory);
-            } catch (\League\Flysystem\UnableToRetrieveMetadata) {
-                $lastModified = 0;
-            }
-
-            return new FolderItem(
-                name: basename($directory),
-                path: $directory,
-                lastModified: $lastModified,
-            );
-        }, $directories);
+        return array_map(fn (DirectoryAttributes $dir): FolderItem => new FolderItem(
+            name: basename($dir->path()),
+            path: $dir->path(),
+            lastModified: $dir->lastModified() ?? 0,
+        ), $directories);
     }
 
     /**
-     * @param  array<int, string>  $files
+     * @param  list<FileAttributes>  $files
      * @return array<int, FileItem>
      */
-    protected function buildFileItems(array $files, Filesystem $storage, string $disk): array
+    protected function buildFileItems(array $files, string $disk): array
     {
         $thumbnailDir = config('filament-file-manager.thumbnails.directory', '.thumbnails');
 
         return array_values(array_filter(
-            array_map(function (string $file) use ($storage, $disk, $thumbnailDir): ?FileItem {
-                $name = basename($file);
+            array_map(function (FileAttributes $file) use ($disk, $thumbnailDir): ?FileItem {
+                $path = $file->path();
+                $name = basename($path);
 
-                if (str_starts_with($name, '.') || str_contains($file, $thumbnailDir.'/')) {
+                if (str_starts_with($name, '.') || str_contains($path, $thumbnailDir.'/')) {
                     return null;
                 }
 
                 $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
                 $category = $this->fileTypeResolver->resolve($name);
 
-                try {
-                    $size = $storage->size($file);
-                    $lastModified = $storage->lastModified($file);
-                } catch (\League\Flysystem\UnableToRetrieveMetadata) {
-                    $size = 0;
-                    $lastModified = 0;
-                }
-
-                $url = $this->getUrl($disk, $file);
+                $url = $this->getUrl($disk, $path);
                 $thumbnailUrl = in_array($extension, FileItem::THUMBNAILABLE_EXTENSIONS, true)
-                    ? $this->thumbnailService->getExistingThumbnailUrl($disk, $file)
+                    ? $this->thumbnailService->getExistingThumbnailUrl($disk, $path)
                     : null;
 
                 return new FileItem(
                     name: $name,
-                    path: $file,
-                    size: $size,
-                    lastModified: $lastModified,
+                    path: $path,
+                    size: $file->fileSize() ?? 0,
+                    lastModified: $file->lastModified() ?? 0,
                     extension: $extension,
                     category: $category,
                     mimeType: $this->fileTypeResolver->mimeType($extension),
@@ -418,7 +419,7 @@ class FileManagerService
     /**
      * @throws \RuntimeException
      */
-    protected function disk(string $disk): Filesystem
+    protected function disk(string $disk): FilesystemAdapter
     {
         $this->ensureLocalDisk($disk);
 
