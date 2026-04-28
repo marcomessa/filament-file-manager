@@ -33,6 +33,7 @@ return [
         'move_selected' => 'Sposta selezionati',
         'delete_selected' => 'Elimina selezionati',
         'confirm_selection' => 'Conferma selezione',
+        'clear_selection' => 'Cancella selezione',
         'browse' => 'Sfoglia',
         'select_file' => 'Seleziona file',
         'check_updates' => 'Controlla aggiornamenti',

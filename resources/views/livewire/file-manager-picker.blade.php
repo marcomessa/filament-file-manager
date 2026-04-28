@@ -183,23 +183,26 @@
     </div>
 
     {{-- Confirm button --}}
-    <div class="flex shrink-0 items-center justify-end border-t border-gray-200 pt-4 dark:border-white/10">
-        <button
+    <div class="flex shrink-0 items-center justify-end gap-3 border-t border-gray-200 pt-4 dark:border-white/10">
+        @if (count($selectedItems) > 0)
+            <x-filament::button
+                wire:click="clearSelection"
+                color="gray"
+                icon="heroicon-m-x-mark"
+            >
+                {{ __('filament-file-manager::file-manager.actions.clear_selection') }}
+            </x-filament::button>
+        @endif
+
+        <x-filament::button
             wire:click="confirmSelection"
-            type="button"
-            @disabled(count($selectedItems) === 0)
-            @class([
-                'inline-flex items-center justify-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm transition',
-                'bg-primary-600 text-white hover:bg-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-500 dark:hover:bg-primary-400' => count($selectedItems) > 0,
-                'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500' => count($selectedItems) === 0,
-            ])
+            icon="heroicon-m-check"
         >
-            <x-filament::icon icon="heroicon-m-check" class="size-4" />
             {{ __('filament-file-manager::file-manager.actions.confirm_selection') }}
             @if (count($selectedItems) > 0)
                 ({{ count($selectedItems) }})
             @endif
-        </button>
+        </x-filament::button>
     </div>
 
     <x-filament-actions::modals />

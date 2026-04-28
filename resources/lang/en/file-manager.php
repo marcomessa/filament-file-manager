@@ -33,6 +33,7 @@ return [
         'move_selected' => 'Move selected',
         'delete_selected' => 'Delete selected',
         'confirm_selection' => 'Confirm selection',
+        'clear_selection' => 'Clear selection',
         'browse' => 'Browse',
         'select_file' => 'Select file',
         'check_updates' => 'Check for updates',

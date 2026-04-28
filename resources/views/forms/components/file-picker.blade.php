@@ -11,7 +11,19 @@
 
 <x-dynamic-component :component="$fieldWrapperView" :field="$field">
     <div
-        x-data
+        x-data="{
+            removeItem(path) {
+                @if ($isMultiple)
+                    let current = $wire.get('{{ $statePath }}') || [];
+                    $wire.set('{{ $statePath }}', current.filter(p => p !== path));
+                @else
+                    $wire.set('{{ $statePath }}', null);
+                @endif
+            },
+            clearAll() {
+                $wire.set('{{ $statePath }}', {{ $isMultiple ? '[]' : 'null' }});
+            },
+        }"
         x-on:file-picker-selected.window="
             if ($event.detail.fieldId === '{{ $id }}') {
                 $wire.set('{{ $statePath }}', $event.detail.paths);
@@ -28,7 +40,7 @@
                                 $imgSrc = $item['thumbnailUrl'] ?? $item['fileUrl'];
                             @endphp
 
-                            <div class="size-32 shrink-0 overflow-hidden rounded-lg bg-gray-50 ring-1 ring-gray-950/5 dark:bg-white/5 dark:ring-white/10">
+                            <div class="group relative size-32 shrink-0 overflow-hidden rounded-lg bg-gray-50 ring-1 ring-gray-950/5 dark:bg-white/5 dark:ring-white/10">
                                 @if ($imgSrc)
                                     <img
                                         src="{{ $imgSrc }}"
@@ -40,6 +52,16 @@
                                         <x-filament::icon :icon="$item['icon']" @class(['size-8', $item['iconColor']]) />
                                     </div>
                                 @endif
+
+                                @unless ($isDisabled)
+                                    <button
+                                        type="button"
+                                        x-on:click="removeItem(@js($item['path']))"
+                                        class="absolute top-1 right-1 flex size-6 items-center justify-center rounded-full bg-gray-900/60 text-white opacity-0 transition hover:bg-danger-600 group-hover:opacity-100"
+                                    >
+                                        <x-filament::icon icon="heroicon-m-x-mark" class="size-3.5" />
+                                    </button>
+                                @endunless
                             </div>
                         @endforeach
                     </div>
@@ -64,6 +86,16 @@
                             <span class="max-w-[12rem] truncate text-sm text-gray-700 dark:text-gray-300" title="{{ $item['name'] }}">
                                 {{ $item['name'] }}
                             </span>
+
+                            @unless ($isDisabled)
+                                <button
+                                    type="button"
+                                    x-on:click="removeItem(@js($item['path']))"
+                                    class="-mr-1 flex size-5 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-200 hover:text-danger-600 dark:hover:bg-white/10 dark:hover:text-danger-400"
+                                >
+                                    <x-filament::icon icon="heroicon-m-x-mark" class="size-3.5" />
+                                </button>
+                            @endunless
                         </div>
                     @endforeach
 
