@@ -1,0 +1,140 @@
+<?php
+
+return [
+
+    'page' => [
+        'title' => 'مدير الملفات',
+        'navigation_label' => 'مدير الملفات',
+    ],
+
+    'toolbar' => [
+        'upload' => 'رفع',
+        'new_folder' => 'مجلد جديد',
+        'refresh' => 'تحديث',
+        'deselect' => 'إلغاء التحديد',
+        'sort_name' => 'الاسم',
+        'sort_size' => 'الحجم',
+        'sort_date' => 'التاريخ',
+        'sort_type' => 'النوع',
+        'sort_asc' => 'ترتيب تصاعدي',
+        'sort_desc' => 'ترتيب تنازلي',
+        'selected_count' => ':count عنصر محدد|:count عناصر محددة',
+    ],
+
+    'actions' => [
+        'rename' => 'إعادة تسمية',
+        'delete' => 'حذف',
+        'preview' => 'معاينة',
+        'full_preview' => 'معاينة كاملة',
+        'download' => 'تنزيل',
+        'open' => 'فتح',
+        'upload_files' => 'رفع ملفات',
+        'new_folder' => 'مجلد جديد',
+        'move_selected' => 'نقل المحدد',
+        'delete_selected' => 'حذف المحدد',
+        'confirm_selection' => 'تأكيد التحديد',
+        'clear_selection' => 'مسح التحديد',
+        'browse' => 'تصفح',
+        'select_file' => 'تحديد ملف',
+        'check_updates' => 'التحقق من وجود تحديثات',
+        'update_available_title' => 'تحديث متاح',
+        'update_available_body' => 'الإصدار :latest متاح (الحالي: :current).',
+        'up_to_date_title' => 'مُحدّث',
+        'up_to_date_body' => 'أنت تستخدم أحدث إصدار (:current).',
+        'update_check_failed_title' => 'فشل التحقق',
+        'update_check_failed_body' => 'تعذر التحقق من وجود تحديثات. يرجى المحاولة مرة أخرى لاحقاً.',
+    ],
+
+    'messages' => [
+        'files_uploaded' => 'تم رفع :count ملف|تم رفع :count ملفات',
+        'some_files_not_uploaded' => 'تعذر رفع بعض الملفات',
+        'folder_created' => "تم إنشاء المجلد ':name'",
+        'renamed_successfully' => 'تمت إعادة التسمية بنجاح',
+        'item_deleted' => "تم حذف ':name'",
+        'items_deleted' => 'تم حذف :count عناصر',
+        'items_moved' => 'تم نقل :count عناصر',
+        'item_moved' => "تم نقل ':name' إلى ':destination'",
+        'move_error' => 'حدث خطأ أثناء النقل',
+        'file_too_large' => 'يجب ألا يتجاوز حجم الملف :max.',
+        'upload_failed' => 'فشل الرفع. يجب ألا يتجاوز حجم الملف :max.',
+        'file_type_not_allowed' => 'نوع الملف غير مسموح به: :name',
+        'folder_already_exists' => "المجلد ':name' موجود بالفعل.",
+        'name_already_exists' => "':name' موجود بالفعل.",
+        'extension_changed' => 'تغيير امتداد الملف قد يجعله غير قابل للاستخدام.',
+        'permission_denied' => 'ليس لديك صلاحية لتنفيذ هذا الإجراء.',
+    ],
+
+    'labels' => [
+        'folder_name' => 'اسم المجلد',
+        'new_name' => 'اسم جديد',
+        'destination_folder' => 'المجلد الوجهة',
+        'destination_placeholder' => 'مثال: images/photos',
+        'destination_helper' => 'اتركه فارغاً للنقل إلى المسار الرئيسي.',
+        'file' => 'ملف',
+        'name_validation' => 'لا يمكن أن يحتوي الاسم على / أو \\.',
+        'folder' => 'مجلد',
+        'files_count' => ':count ملف|:count ملفات',
+        'folders_count' => ':count مجلد|:count مجلدات',
+        'selected' => 'تم تحديد :count',
+        'file_selected' => 'تم تحديد ملف واحد',
+        'no_file_selected' => 'لم يتم تحديد أي ملف',
+        'root' => 'الرئيسي',
+        'showing_of_total' => 'عرض :shown من إجمالي :total ملفات',
+        'loading_more' => 'جاري تحميل المزيد...',
+    ],
+
+    'modals' => [
+        'confirm_deletion' => 'تأكيد الحذف',
+        'deletion_warning' => 'لا يمكن التراجع عن هذا الإجراء. هل تريد المتابعة؟',
+        'bulk_deletion_warning' => 'أنت على وشك حذف :count عناصر. لا يمكن التراجع عن هذا الإجراء.',
+        'close' => 'إغلاق',
+    ],
+
+    'sidebar' => [
+        'folders' => 'المجلدات',
+        'expand' => 'توسيع',
+        'collapse' => 'طي',
+        'empty' => '(فارغ)',
+        'show_folders' => 'إظهار المجلدات',
+        'show_preview' => 'إظهار المعاينة',
+        'hide_preview' => 'إخفاء المعاينة',
+    ],
+
+    'file_types' => [
+        'image' => 'صورة',
+        'document' => 'مستند',
+        'audio' => 'صوت',
+        'video' => 'فيديو',
+        'archive' => 'أرشيف',
+        'code' => 'كود',
+        'other' => 'أخرى',
+    ],
+
+    'editors' => [
+        'file_manager' => 'مدير الملفات',
+        'insert' => 'إدراج',
+        'select_files' => 'حدد الملفات لإدراجها',
+        'no_url_warning' => 'تم تخطي بعض الملفات لأنه ليس لديها رابط عام.',
+    ],
+
+    'commands' => [
+        'thumbnails_cleared' => 'تم مسح الصور المصغرة بنجاح من القرص [:disk].',
+        'no_thumbnails' => 'لم يتم العثور على مسار الصور المصغرة على القرص [:disk].',
+        'remote_disk_not_supported' => 'يستخدم القرص [:disk] المشغل [:driver]. الأقراص البعيدة متوفرة في إصدار Pro.',
+    ],
+
+    'misc' => [
+        'empty_folder' => 'هذا المجلد فارغ',
+        'empty_folder_hint' => 'قم برفع ملفات أو إنشاء مجلد جديد للبدء',
+        'select_file_preview' => 'حدد ملفًا لعرض تفاصيله',
+        'info' => 'معلومات',
+        'type' => 'النوع',
+        'mime' => 'نوع MIME',
+        'size' => 'الحجم',
+        'modified' => 'تاريخ التعديل',
+        'audio_not_supported' => 'متصفحك لا يدعم تشغيل الملفات الصوتية.',
+        'video_not_supported' => 'متصفحك لا يدعم تشغيل ملفات الفيديو.',
+        'cannot_read_file' => 'تعذر قراءة محتوى الملف.',
+    ],
+
+];
