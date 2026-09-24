@@ -15,6 +15,7 @@ trait ResetsPermissions
         $plugin->canRename(true);
         $plugin->canMove(true);
         $plugin->canDownload(true);
+        $plugin->canCopy(true);
         $plugin->canCreateFolder(true);
     }
 }
