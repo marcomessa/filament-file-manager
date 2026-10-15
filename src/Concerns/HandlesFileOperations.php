@@ -206,4 +206,31 @@ trait HandlesFileOperations
 
         return $this->fileManagerService->download($this->currentDisk, $path);
     }
+
+    public function copyFile(string $path): void
+    {
+        abort_unless(FileManagerPlugin::get()->canUserCopy($this->currentDisk, $path), 403, __('filament-file-manager::file-manager.messages.permission_denied'));
+
+        $url = $this->fileManagerService->getUrl($this->currentDisk, $path);
+
+        if (! $url) {
+            Notification::make()
+                ->title(__('filament-file-manager::file-manager.messages.no_public_url'))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        $url = url()->to($url);
+
+        $this->js(
+            'navigator.clipboard.writeText('.json_encode($url, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT).')'
+        );
+
+        Notification::make()
+            ->title(__('filament-file-manager::file-manager.messages.url_copied'))
+            ->success()
+            ->send();
+    }
 }

@@ -98,6 +98,7 @@ class PermissionsTest extends TestCase
         $this->assertSame($plugin, $plugin->canRename(true));
         $this->assertSame($plugin, $plugin->canMove(true));
         $this->assertSame($plugin, $plugin->canDownload(true));
+        $this->assertSame($plugin, $plugin->canCopy(true));
         $this->assertSame($plugin, $plugin->canCreateFolder(true));
     }
 
@@ -283,6 +284,7 @@ class PermissionsTest extends TestCase
         $this->assertArrayHasKey('canRename', $permissions);
         $this->assertArrayHasKey('canMove', $permissions);
         $this->assertArrayHasKey('canDownload', $permissions);
+        $this->assertArrayHasKey('canCopy', $permissions);
         $this->assertArrayHasKey('canCreateFolder', $permissions);
     }
 

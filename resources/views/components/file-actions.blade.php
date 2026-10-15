@@ -21,6 +21,16 @@
     >
         <x-filament::icon icon="heroicon-m-eye" :class="$iconClass" />
     </button>
+    @if (($permissions['canCopy'] ?? true) && request()->secure())
+        <button
+            wire:click="copyFile(@js($item->path))"
+            type="button"
+            class="{{ $buttonClass }} text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
+            title="{{ __('filament-file-manager::file-manager.actions.copy') }}"
+        >
+            <x-filament::icon icon="heroicon-m-clipboard" :class="$iconClass" />
+        </button>
+    @endif
     @if ($permissions['canDownload'] ?? true)
         <button
             wire:click="downloadFile(@js($item->path))"
