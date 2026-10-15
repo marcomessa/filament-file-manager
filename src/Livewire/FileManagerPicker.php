@@ -120,6 +120,15 @@ class FileManagerPicker extends Component implements HasActions, HasForms
             ->action(fn () => null);
     }
 
+    /**
+     * Keep the selection across folders: the picker only returns paths to the
+     * form field, and the selection summary keeps every selected file visible.
+     */
+    protected function resetSelectionOnNavigate(): void
+    {
+        //
+    }
+
     public function confirmSelection(): void
     {
         $paths = $this->multiple

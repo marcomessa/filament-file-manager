@@ -9,10 +9,11 @@
 
 @if ($isFolder)
     <div
+        wire:key="item-{{ $item->path }}"
         @class([
             'group relative flex flex-col items-center gap-2 rounded-xl p-3 ring-1 transition duration-200',
             'ring-primary-500 bg-primary-50/50 dark:bg-primary-500/10 dark:ring-primary-400' => $isSelected,
-            'ring-gray-950/5 hover:shadow-md hover:scale-[1.02] dark:ring-white/10 dark:hover:ring-white/20' => !$isSelected,
+            'ring-gray-950/5 hover:shadow-md dark:ring-white/10 dark:hover:ring-white/20' => !$isSelected,
         ])
         @if (! $pickMode)
             data-context-target
@@ -75,18 +76,15 @@
         </button>
 
         @if (! $pickMode)
-            {{-- Actions overlay --}}
-            <div
-                x-show="showActions"
-                x-transition.opacity.duration.150ms
-                class="absolute top-1.5 right-1.5 flex items-center gap-0.5 rounded-lg bg-white/90 p-0.5 shadow-sm ring-1 ring-gray-950/5 backdrop-blur-sm dark:bg-gray-800/90 dark:ring-white/10"
-            >
-                <x-filament-file-manager::file-actions :item="$item" :is-folder="true" size="sm" :permissions="$permissions" />
+            {{-- Actions menu --}}
+            <div class="absolute top-1.5 right-1.5 z-20 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
+                <x-filament-file-manager::card-actions-menu :item="$item" :is-folder="true" :permissions="$permissions" />
             </div>
         @endif
     </div>
 @else
     <div
+        wire:key="item-{{ $item->path }}"
         @class([
             'group relative flex flex-col items-center gap-2 rounded-xl p-3 transition duration-200',
             'ring-1 ring-primary-500 bg-primary-50/50 dark:bg-primary-500/10 dark:ring-primary-400' => $isSelected,
@@ -94,7 +92,7 @@
         @if (! $isSelected && ! $pickMode)
             :class="previewFile?.path === @js($item->path)
                 ? 'ring-2 ring-gray-400 dark:ring-gray-500'
-                : 'ring-1 ring-gray-950/5 hover:shadow-md hover:scale-[1.02] dark:ring-white/10 dark:hover:ring-white/20'"
+                : 'ring-1 ring-gray-950/5 hover:shadow-md dark:ring-white/10 dark:hover:ring-white/20'"
         @elseif (! $isSelected)
             class="ring-1 ring-gray-950/5 hover:shadow-md hover:scale-[1.02] dark:ring-white/10 dark:hover:ring-white/20"
         @endif
@@ -159,13 +157,9 @@
         </button>
 
         @if (! $pickMode)
-            {{-- Actions overlay --}}
-            <div
-                x-show="showActions"
-                x-transition.opacity.duration.150ms
-                class="absolute top-1.5 right-1.5 flex items-center gap-0.5 rounded-lg bg-white/90 p-0.5 shadow-sm ring-1 ring-gray-950/5 backdrop-blur-sm dark:bg-gray-800/90 dark:ring-white/10"
-            >
-                <x-filament-file-manager::file-actions :item="$item" size="sm" :permissions="$permissions" />
+            {{-- Actions menu --}}
+            <div class="absolute top-1.5 right-1.5 z-20 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
+                <x-filament-file-manager::card-actions-menu :item="$item" :permissions="$permissions" />
             </div>
         @endif
     </div>

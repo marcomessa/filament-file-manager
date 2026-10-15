@@ -186,4 +186,32 @@ class SelectionTest extends TestCase
         $this->assertTrue($component->instance()->isSelected('file1.txt'));
         $this->assertFalse($component->instance()->isSelected('file2.txt'));
     }
+
+    public function test_navigate_to_clears_selection(): void
+    {
+        Storage::disk('public')->put('file.txt', 'content');
+        Storage::disk('public')->makeDirectory('images');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
+            ->call('toggleSelection', 'file.txt')
+            ->call('navigateTo', 'images')
+            ->assertSet('selectedItems', []);
+    }
+
+    public function test_navigate_up_clears_selection(): void
+    {
+        Storage::disk('public')->put('images/photo.jpg', 'content');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class)
+            ->call('navigateTo', 'images')
+            ->call('toggleSelection', 'images/photo.jpg')
+            ->call('navigateUp')
+            ->assertSet('selectedItems', []);
+    }
 }

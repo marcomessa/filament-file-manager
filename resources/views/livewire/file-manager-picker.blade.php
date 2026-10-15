@@ -182,6 +182,43 @@
         @endif
     </div>
 
+    {{-- Selection summary: lists every selected file, including those in other folders --}}
+    @if (count($selectedItems) > 0)
+        <div class="flex shrink-0 flex-col gap-2">
+            <span class="text-xs font-medium text-gray-500 uppercase dark:text-gray-400">
+                {{ __('filament-file-manager::file-manager.labels.selected_files') }}
+            </span>
+            <div class="flex max-h-24 flex-wrap gap-2 overflow-y-auto">
+                @foreach ($selectedItems as $selectedPath)
+                    @php
+                        $selectedDirectory = dirname($selectedPath);
+                    @endphp
+                    <span
+                        wire:key="selected-{{ $selectedPath }}"
+                        class="inline-flex max-w-full items-center gap-1.5 rounded-lg bg-gray-100 py-1 ps-2 pe-1 text-xs text-gray-700 dark:bg-white/5 dark:text-gray-300"
+                        title="{{ $selectedPath }}"
+                    >
+                        <x-filament::icon icon="heroicon-m-document" class="size-3.5 shrink-0 text-gray-400" />
+                        <span class="truncate">
+                            @if ($selectedDirectory !== '.')
+                                <span class="text-gray-400 dark:text-gray-500">{{ $selectedDirectory }}/</span>
+                            @endif
+                            <span class="font-medium">{{ basename($selectedPath) }}</span>
+                        </span>
+                        <button
+                            wire:click="toggleSelection(@js($selectedPath))"
+                            type="button"
+                            class="flex size-5 shrink-0 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-200 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                            title="{{ __('filament-file-manager::file-manager.actions.remove_from_selection') }}"
+                        >
+                            <x-filament::icon icon="heroicon-m-x-mark" class="size-3.5" />
+                        </button>
+                    </span>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     {{-- Confirm button --}}
     <div class="flex shrink-0 items-center justify-end gap-3 border-t border-gray-200 pt-4 dark:border-white/10">
         @if (count($selectedItems) > 0)

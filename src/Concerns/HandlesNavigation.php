@@ -15,7 +15,7 @@ trait HandlesNavigation
         }
 
         $this->currentPath = $path;
-        $this->selectedItems = [];
+        $this->resetSelectionOnNavigate();
         $this->loadDirectory();
 
         if (method_exists($this, 'ensureAncestorsExpanded')) {
@@ -31,8 +31,17 @@ trait HandlesNavigation
 
         $parent = dirname($this->currentPath);
         $this->currentPath = $parent === '.' ? '' : $parent;
-        $this->selectedItems = [];
+        $this->resetSelectionOnNavigate();
         $this->loadDirectory();
+    }
+
+    /**
+     * Clear the selection when the current folder changes, so bulk actions
+     * never apply to items the user can no longer see.
+     */
+    protected function resetSelectionOnNavigate(): void
+    {
+        $this->selectedItems = [];
     }
 
     /**

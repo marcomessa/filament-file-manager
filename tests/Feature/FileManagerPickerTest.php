@@ -327,4 +327,101 @@ class FileManagerPickerTest extends TestCase
             ->assertSee('images')
             ->assertDontSee('document.pdf');
     }
+
+    public function test_picker_keeps_selection_across_folders(): void
+    {
+        Storage::disk('public')->put('products/cerec.png', 'content');
+        Storage::disk('public')->put('products/latest/cutter.jpg', 'content');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(FileManagerPicker::class, ['multiple' => true, 'fieldId' => 'test-field'])
+            ->call('navigateTo', 'products')
+            ->call('toggleSelection', 'products/cerec.png')
+            ->call('navigateTo', 'products/latest')
+            ->call('toggleSelection', 'products/latest/cutter.jpg')
+            ->call('navigateUp')
+            ->assertSet('selectedItems', ['products/cerec.png', 'products/latest/cutter.jpg'])
+            ->call('confirmSelection')
+            ->assertDispatched('file-picker-selected', paths: ['products/cerec.png', 'products/latest/cutter.jpg'], fieldId: 'test-field');
+    }
+
+    public function test_picker_keeps_preselected_paths_after_navigation(): void
+    {
+        Storage::disk('public')->put('products/cerec.png', 'content');
+        Storage::disk('public')->put('products/latest/cutter.jpg', 'content');
+        Storage::disk('public')->put('products/latest/new.jpg', 'content');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(FileManagerPicker::class, [
+            'multiple' => true,
+            'fieldId' => 'test-field',
+            'selectedPaths' => ['products/cerec.png', 'products/latest/cutter.jpg'],
+        ])
+            ->call('navigateTo', 'products/latest')
+            ->call('toggleSelection', 'products/latest/new.jpg')
+            ->call('confirmSelection')
+            ->assertDispatched('file-picker-selected', paths: ['products/cerec.png', 'products/latest/cutter.jpg', 'products/latest/new.jpg'], fieldId: 'test-field');
+    }
+
+    public function test_picker_keeps_single_selection_across_folders(): void
+    {
+        Storage::disk('public')->put('products/cerec.png', 'content');
+        Storage::disk('public')->makeDirectory('docs');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(FileManagerPicker::class, ['multiple' => false])
+            ->call('navigateTo', 'products')
+            ->call('toggleSelection', 'products/cerec.png')
+            ->call('navigateTo', 'docs')
+            ->assertSet('selectedItems', ['products/cerec.png']);
+    }
+
+    public function test_selection_summary_lists_files_from_other_folders(): void
+    {
+        Storage::disk('public')->put('products/cerec.png', 'content');
+        Storage::disk('public')->makeDirectory('docs');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(FileManagerPicker::class, ['multiple' => true])
+            ->call('navigateTo', 'products')
+            ->call('toggleSelection', 'products/cerec.png')
+            ->call('navigateTo', 'docs')
+            ->assertSee(__('filament-file-manager::file-manager.labels.selected_files'))
+            ->assertSee('products/')
+            ->assertSee('cerec.png');
+    }
+
+    public function test_selection_summary_is_hidden_without_selection(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(FileManagerPicker::class, ['multiple' => true])
+            ->assertDontSee(__('filament-file-manager::file-manager.labels.selected_files'));
+    }
+
+    public function test_selection_summary_removes_item(): void
+    {
+        Storage::disk('public')->put('products/cerec.png', 'content');
+        Storage::disk('public')->put('docs/manual.pdf', 'content');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(FileManagerPicker::class, [
+            'multiple' => true,
+            'selectedPaths' => ['products/cerec.png', 'docs/manual.pdf'],
+        ])
+            ->call('toggleSelection', 'docs/manual.pdf')
+            ->assertSet('selectedItems', ['products/cerec.png'])
+            ->assertDontSee('manual.pdf');
+    }
 }

@@ -8,6 +8,7 @@
 
 @if ($isFolder)
     <div
+        wire:key="item-{{ $item->path }}"
         @class([
             'group flex w-full items-center gap-4 px-4 py-2.5 transition duration-150',
             'bg-primary-50/50 dark:bg-primary-500/10' => $isSelected,
@@ -70,6 +71,7 @@
     </div>
 @else
     <div
+        wire:key="item-{{ $item->path }}"
         @class([
             'group flex items-center gap-4 px-4 py-2.5 transition duration-150',
             'bg-primary-50/50 dark:bg-primary-500/10' => $isSelected,
