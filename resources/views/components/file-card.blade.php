@@ -9,6 +9,7 @@
 
 @if ($isFolder)
     <div
+        wire:key="item-{{ $item->path }}"
         @class([
             'group relative flex flex-col items-center gap-2 rounded-xl p-3 ring-1 transition duration-200',
             'ring-primary-500 bg-primary-50/50 dark:bg-primary-500/10 dark:ring-primary-400' => $isSelected,
@@ -87,6 +88,7 @@
     </div>
 @else
     <div
+        wire:key="item-{{ $item->path }}"
         @class([
             'group relative flex flex-col items-center gap-2 rounded-xl p-3 transition duration-200',
             'ring-1 ring-primary-500 bg-primary-50/50 dark:bg-primary-500/10 dark:ring-primary-400' => $isSelected,
