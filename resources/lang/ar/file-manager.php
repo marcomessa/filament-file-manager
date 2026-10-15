@@ -35,6 +35,7 @@ return [
         'confirm_selection' => 'تأكيد التحديد',
         'clear_selection' => 'مسح التحديد',
         'remove_from_selection' => 'إزالة من التحديد',
+        'more_actions' => 'المزيد من الإجراءات',
         'browse' => 'تصفح',
         'select_file' => 'تحديد ملف',
         'check_updates' => 'التحقق من وجود تحديثات',

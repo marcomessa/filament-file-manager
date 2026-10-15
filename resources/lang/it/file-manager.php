@@ -35,6 +35,7 @@ return [
         'confirm_selection' => 'Conferma selezione',
         'clear_selection' => 'Cancella selezione',
         'remove_from_selection' => 'Rimuovi dalla selezione',
+        'more_actions' => 'Altre azioni',
         'browse' => 'Sfoglia',
         'select_file' => 'Seleziona file',
         'check_updates' => 'Controlla aggiornamenti',

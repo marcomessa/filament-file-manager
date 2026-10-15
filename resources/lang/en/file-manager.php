@@ -35,6 +35,7 @@ return [
         'confirm_selection' => 'Confirm selection',
         'clear_selection' => 'Clear selection',
         'remove_from_selection' => 'Remove from selection',
+        'more_actions' => 'More actions',
         'browse' => 'Browse',
         'select_file' => 'Select file',
         'check_updates' => 'Check for updates',
