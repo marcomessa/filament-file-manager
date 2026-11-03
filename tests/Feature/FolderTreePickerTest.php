@@ -59,6 +59,16 @@ class FolderTreePickerTest extends TestCase
         $this->assertCount(2, $result);
     }
 
+    public function test_folder_tree_picker_excludes_thumbnail_directory(): void
+    {
+        Storage::disk('public')->put('.thumbnails/photo.jpg', 'thumb');
+        Storage::disk('public')->makeDirectory('documents');
+
+        $picker = FolderTreePicker::make('destination')->disk('public');
+
+        $this->assertSame(['documents'], array_column($picker->getSubfolders(''), 'name'));
+    }
+
     public function test_folder_tree_picker_returns_empty_for_empty_folder(): void
     {
         Storage::disk('public')->makeDirectory('empty-folder');
