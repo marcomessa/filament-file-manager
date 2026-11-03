@@ -198,6 +198,59 @@ class FileManagerServiceTest extends TestCase
         $this->assertSame('photo.jpg', $listing->files[0]->name);
     }
 
+    public function test_thumbnail_directory_is_excluded_from_folders(): void
+    {
+        Storage::disk('public')->put('.thumbnails/photo.jpg', 'thumb');
+        Storage::disk('public')->makeDirectory('documents');
+
+        $listing = $this->service->listDirectory('public');
+
+        $this->assertSame(['documents'], array_map(fn ($folder): string => $folder->name, $listing->folders));
+    }
+
+    public function test_nested_thumbnail_directory_is_excluded_from_folders(): void
+    {
+        config(['filament-file-manager.thumbnails.directory' => 'cache/.thumbnails']);
+
+        Storage::disk('public')->put('cache/.thumbnails/photo.jpg', 'thumb');
+        Storage::disk('public')->makeDirectory('cache/reports');
+
+        $listing = $this->service->listDirectory('public', 'cache');
+
+        $this->assertSame(['reports'], array_map(fn ($folder): string => $folder->name, $listing->folders));
+    }
+
+    public function test_folder_with_same_name_outside_thumbnail_path_stays_visible(): void
+    {
+        Storage::disk('public')->makeDirectory('projects/.thumbnails');
+
+        $listing = $this->service->listDirectory('public', 'projects');
+
+        $this->assertSame(['.thumbnails'], array_map(fn ($folder): string => $folder->name, $listing->folders));
+    }
+
+    public function test_files_in_folder_ending_with_thumbnail_directory_name_stay_visible(): void
+    {
+        Storage::disk('public')->put('foo.thumbnails/photo.jpg', 'image');
+
+        $listing = $this->service->listDirectory('public', 'foo.thumbnails');
+
+        $this->assertCount(1, $listing->files);
+        $this->assertSame('photo.jpg', $listing->files[0]->name);
+    }
+
+    public function test_files_in_folder_containing_custom_thumbnail_directory_name_stay_visible(): void
+    {
+        config(['filament-file-manager.thumbnails.directory' => 'thumbs']);
+
+        Storage::disk('public')->put('mythumbs/photo.jpg', 'image');
+
+        $listing = $this->service->listDirectory('public', 'mythumbs');
+
+        $this->assertCount(1, $listing->files);
+        $this->assertSame('photo.jpg', $listing->files[0]->name);
+    }
+
     public function test_sort_files_by_name_ascending(): void
     {
         Storage::disk('public')->put('charlie.txt', 'c');

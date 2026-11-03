@@ -295,11 +295,16 @@ class FileManagerService
      */
     protected function buildFolderItems(array $directories): array
     {
-        return array_map(fn (DirectoryAttributes $dir): FolderItem => new FolderItem(
+        $directories = array_filter(
+            $directories,
+            fn (DirectoryAttributes $dir): bool => ! $this->thumbnailService->isThumbnailDirectory($dir->path()),
+        );
+
+        return array_values(array_map(fn (DirectoryAttributes $dir): FolderItem => new FolderItem(
             name: basename($dir->path()),
             path: $dir->path(),
             lastModified: $dir->lastModified() ?? 0,
-        ), $directories);
+        ), $directories));
     }
 
     /**
@@ -308,14 +313,12 @@ class FileManagerService
      */
     protected function buildFileItems(array $files, string $disk): array
     {
-        $thumbnailDir = config('filament-file-manager.thumbnails.directory', '.thumbnails');
-
         return array_values(array_filter(
-            array_map(function (FileAttributes $file) use ($disk, $thumbnailDir): ?FileItem {
+            array_map(function (FileAttributes $file) use ($disk): ?FileItem {
                 $path = $file->path();
                 $name = basename($path);
 
-                if (str_starts_with($name, '.') || str_contains($path, $thumbnailDir.'/')) {
+                if (str_starts_with($name, '.') || $this->thumbnailService->isInThumbnailDirectory($path)) {
                     return null;
                 }
 

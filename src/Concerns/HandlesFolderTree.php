@@ -4,6 +4,7 @@ namespace MmesDesign\FilamentFileManager\Concerns;
 
 use Illuminate\Support\Facades\Storage;
 use MmesDesign\FilamentFileManager\FileManagerPlugin;
+use MmesDesign\FilamentFileManager\Services\ThumbnailService;
 
 trait HandlesFolderTree
 {
@@ -76,9 +77,12 @@ trait HandlesFolderTree
      */
     protected function filterBrowsableDirectories(FileManagerPlugin $plugin, array $directories): array
     {
+        $thumbnailService = app(ThumbnailService::class);
+
         return array_values(array_filter(
             $directories,
-            fn (string $dir): bool => $plugin->canUserBrowse($this->currentDisk, $dir),
+            fn (string $dir): bool => ! $thumbnailService->isThumbnailDirectory($dir)
+                && $plugin->canUserBrowse($this->currentDisk, $dir),
         ));
     }
 

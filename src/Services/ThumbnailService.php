@@ -135,6 +135,27 @@ class ThumbnailService
         return $directory.'/'.$path;
     }
 
+    /**
+     * Determine if the path is the directory where thumbnails are stored.
+     */
+    public function isThumbnailDirectory(string $path): bool
+    {
+        return trim($path, '/') === $this->thumbnailDirectory();
+    }
+
+    /**
+     * Determine if the path points to something stored inside the thumbnails directory.
+     */
+    public function isInThumbnailDirectory(string $path): bool
+    {
+        return str_starts_with(ltrim($path, '/'), $this->thumbnailDirectory().'/');
+    }
+
+    protected function thumbnailDirectory(): string
+    {
+        return trim((string) config('filament-file-manager.thumbnails.directory', '.thumbnails'), '/');
+    }
+
     protected function isEnabled(): bool
     {
         return (bool) config('filament-file-manager.thumbnails.enabled', true);

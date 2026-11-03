@@ -356,6 +356,21 @@ class FileManagerPageTest extends TestCase
         $this->assertContains('work', $childNames);
     }
 
+    public function test_folder_tree_excludes_thumbnail_directory(): void
+    {
+        Storage::disk('public')->put('.thumbnails/photo.jpg', 'thumb');
+        Storage::disk('public')->makeDirectory('documents');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $component = Livewire::test(\MmesDesign\FilamentFileManager\Livewire\FileManager::class);
+
+        $nodes = $component->instance()->buildTreeNodes();
+
+        $this->assertSame(['documents'], array_column($nodes[''], 'name'));
+    }
+
     public function test_collapse_tree_folder(): void
     {
         Storage::disk('public')->makeDirectory('images');

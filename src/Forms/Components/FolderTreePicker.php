@@ -7,6 +7,7 @@ use Filament\Forms\Components\Field;
 use Filament\Support\Components\Attributes\ExposedLivewireMethod;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Renderless;
+use MmesDesign\FilamentFileManager\Services\ThumbnailService;
 
 class FolderTreePicker extends Field
 {
@@ -33,7 +34,12 @@ class FolderTreePicker extends Field
     #[Renderless]
     public function getSubfolders(string $path): array
     {
-        $directories = Storage::disk($this->getDisk())->directories($path);
+        $thumbnailService = app(ThumbnailService::class);
+
+        $directories = array_values(array_filter(
+            Storage::disk($this->getDisk())->directories($path),
+            fn (string $dir): bool => ! $thumbnailService->isThumbnailDirectory($dir),
+        ));
 
         sort($directories);
 
