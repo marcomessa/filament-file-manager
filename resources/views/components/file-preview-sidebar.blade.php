@@ -173,6 +173,17 @@
                     <x-filament::icon icon="heroicon-m-arrow-down-tray" class="size-4" />
                 </button>
             @endif
+            @if ($permissions['canCopyUrl'] ?? true)
+                <button
+                    x-show="window.isSecureContext && previewFile?.url"
+                    x-on:click="{{ \MmesDesign\FilamentFileManager\Support\ClipboardScript::copyUrl('previewFile.url') }}"
+                    type="button"
+                    class="flex size-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                    title="{{ __('filament-file-manager::file-manager.actions.copy_url') }}"
+                >
+                    <x-filament::icon icon="heroicon-m-clipboard" class="size-4" />
+                </button>
+            @endif
             @if ($permissions['canRename'] ?? true)
                 <button
                     @click="$wire.mountAction('rename', { path: previewFile.path })"

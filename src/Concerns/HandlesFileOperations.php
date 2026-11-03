@@ -206,4 +206,5 @@ trait HandlesFileOperations
 
         return $this->fileManagerService->download($this->currentDisk, $path);
     }
+
 }
