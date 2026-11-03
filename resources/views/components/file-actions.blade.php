@@ -21,12 +21,13 @@
     >
         <x-filament::icon icon="heroicon-m-eye" :class="$iconClass" />
     </button>
-    @if (($permissions['canCopy'] ?? true) && request()->secure())
+    @if (($permissions['canCopyUrl'] ?? true) && filled($item->url))
         <button
-            wire:click="copyFile(@js($item->path))"
+            x-show="window.isSecureContext"
+            x-on:click="{{ \MmesDesign\FilamentFileManager\Support\ClipboardScript::copyUrl(\Illuminate\Support\Js::from($item->url)) }}"
             type="button"
             class="{{ $buttonClass }} text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
-            title="{{ __('filament-file-manager::file-manager.actions.copy') }}"
+            title="{{ __('filament-file-manager::file-manager.actions.copy_url') }}"
         >
             <x-filament::icon icon="heroicon-m-clipboard" :class="$iconClass" />
         </button>

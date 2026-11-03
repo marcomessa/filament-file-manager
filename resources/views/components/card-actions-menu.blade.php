@@ -35,6 +35,15 @@
                     {{ __('filament-file-manager::file-manager.actions.download') }}
                 </x-filament::dropdown.list.item>
             @endif
+            @if (($permissions['canCopyUrl'] ?? true) && filled($item->url))
+                <x-filament::dropdown.list.item
+                    x-show="window.isSecureContext"
+                    x-on:click="{{ \MmesDesign\FilamentFileManager\Support\ClipboardScript::copyUrl(\Illuminate\Support\Js::from($item->url)) }}; $el.closest('.fi-dropdown-panel')?.close()"
+                    icon="heroicon-m-clipboard"
+                >
+                    {{ __('filament-file-manager::file-manager.actions.copy_url') }}
+                </x-filament::dropdown.list.item>
+            @endif
         @endif
         @if ($permissions['canRename'] ?? true)
             <x-filament::dropdown.list.item

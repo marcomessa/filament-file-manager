@@ -29,7 +29,7 @@ class FileManagerPlugin implements Plugin
 
     protected \Closure|bool|null $canDownloadUsing = null;
 
-    protected \Closure|bool|null $canCopyUsing = null;
+    protected \Closure|bool|null $canCopyUrlUsing = null;
 
     protected \Closure|bool|null $canCreateFolderUsing = null;
 
@@ -158,9 +158,9 @@ class FileManagerPlugin implements Plugin
         return $this;
     }
 
-    public function canCopy(\Closure|bool $callback): static
+    public function canCopyUrl(\Closure|bool $callback): static
     {
-        $this->canCopyUsing = $callback;
+        $this->canCopyUrlUsing = $callback;
 
         return $this;
     }
@@ -202,9 +202,9 @@ class FileManagerPlugin implements Plugin
         return $this->resolvePermission('download', ...$context);
     }
 
-    public function canUserCopy(mixed ...$context): bool
+    public function canUserCopyUrl(mixed ...$context): bool
     {
-        return $this->resolvePermission('copy', ...$context);
+        return $this->resolvePermission('copyUrl', ...$context);
     }
 
     public function canUserCreateFolder(mixed ...$context): bool
@@ -220,7 +220,7 @@ class FileManagerPlugin implements Plugin
     /**
      * Build a permissions array for passing to Blade views.
      *
-     * @return array{canUpload: bool, canDelete: bool, canRename: bool, canMove: bool, canDownload: bool, canCopy: bool, canCreateFolder: bool}
+     * @return array{canUpload: bool, canDelete: bool, canRename: bool, canMove: bool, canDownload: bool, canCopyUrl: bool, canCreateFolder: bool}
      */
     public function getPermissions(mixed ...$context): array
     {
@@ -230,7 +230,7 @@ class FileManagerPlugin implements Plugin
             'canRename' => $this->canUserRename(...$context),
             'canMove' => $this->canUserMove(...$context),
             'canDownload' => $this->canUserDownload(...$context),
-            'canCopy' => $this->canUserCopy(...$context),
+            'canCopyUrl' => $this->canUserCopyUrl(...$context),
             'canCreateFolder' => $this->canUserCreateFolder(...$context),
             'canBrowse' => $this->canUserBrowse(...$context),
         ];
@@ -264,7 +264,7 @@ class FileManagerPlugin implements Plugin
             'rename' => $this->evaluateAbility($this->canRenameUsing, ...$context),
             'move' => $this->evaluateAbility($this->canMoveUsing, ...$context),
             'download' => $this->evaluateAbility($this->canDownloadUsing, ...$context),
-            'copy' => $this->evaluateAbility($this->canCopyUsing, ...$context),
+            'copyUrl' => $this->evaluateAbility($this->canCopyUrlUsing, ...$context),
             'createFolder' => $this->evaluateAbility($this->canCreateFolderUsing, ...$context),
             default => true,
         };
